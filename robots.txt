@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kopvol.agv-it.be/sitemap.xml
