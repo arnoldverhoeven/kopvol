@@ -29,7 +29,7 @@
 }
 *{box-sizing:border-box}
 html.adm-open{overflow:hidden}
-html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hh) + 4px);-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hh) + 1px);-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--cream);color:var(--ink);font:400 17px/1.6 var(--fb);overflow-x:hidden}
 img{display:block;max-width:100%;height:auto}
 .grid>*,.menu-grid>*,.products>*,.events>*,.quotes>*{min-width:0}
@@ -95,7 +95,7 @@ nav.main a:hover,nav.main a[aria-current="true"]{background:var(--red2)}
 .hero{position:relative;padding:clamp(26px,4vw,56px) 0 clamp(54px,6vw,84px);overflow:hidden}
 .hero::before{content:"";position:absolute;inset:auto -20% -40% -20%;height:70%;background:radial-gradient(60% 60% at 50% 100%,rgba(184,80,47,.14),transparent 70%);pointer-events:none}
 .hero .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,72px);align-items:center}
-.cup{position:relative;width:min(100%,560px);aspect-ratio:858/554;--mask:url(img/logo.png);-webkit-mask:var(--mask) center/contain no-repeat;mask:var(--mask) center/contain no-repeat;background:var(--cream2);isolation:isolate;overflow:hidden}
+.cup{position:relative;width:min(100%,560px,calc((100vh - 520px) * 1.549));aspect-ratio:858/554;--mask:url(img/logo.png);-webkit-mask:var(--mask) center/contain no-repeat;mask:var(--mask) center/contain no-repeat;background:var(--cream2);isolation:isolate;overflow:hidden}
 .cup .liquid{position:absolute;left:0;right:0;bottom:0;height:0%;background:linear-gradient(180deg,#8E4A28 0%,#5C2D16 55%,#3A1B0D 100%);animation:fill 2.6s cubic-bezier(.3,.6,.25,1) .35s forwards}
 .cup .liquid::before,.cup .liquid::after{content:"";position:absolute;left:-10%;width:220%;height:46px;top:-22px;border-radius:45%;background:linear-gradient(180deg,#C98A4C,#9A5A2E);opacity:.95;animation:wave 2.1s linear 3}
 .cup .liquid::after{background:linear-gradient(180deg,#D9A066,#C98A4C);height:34px;top:-15px;left:-30%;animation-duration:1.6s;animation-direction:reverse;opacity:.9}
@@ -112,7 +112,7 @@ nav.main a:hover,nav.main a[aria-current="true"]{background:var(--red2)}
 .proof{display:flex;align-items:center;gap:12px;margin-top:22px;color:var(--muted);font-size:15px}
 .stars{color:var(--terra);letter-spacing:2px;font-size:15px}
 .hero-photo{position:relative;justify-self:end;width:min(100%,460px)}
-.hero-photo img{aspect-ratio:4/4.6;object-fit:cover;border-radius:230px 230px 28px 28px;box-shadow:var(--sh)}
+.hero-photo img{aspect-ratio:4/4.6;max-height:calc(100vh - 220px);object-fit:cover;border-radius:230px 230px 28px 28px;box-shadow:var(--sh)}
 .chip{position:absolute;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:var(--milk);color:var(--ink);font:700 13px/1 var(--fb);box-shadow:0 10px 24px -12px rgba(36,22,18,.5)}
 .chip i{width:9px;height:9px;border-radius:50%;background:var(--terra)}
 .chip.c1{left:-14px;top:18%}.chip.c2{right:-10px;top:46%}.chip.c3{left:10%;bottom:-16px}
@@ -428,7 +428,7 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
   <a href="#reviews"><span><b>Reviews</b><small>4,6 op Google</small></span></a>
   <a href="#bezoek"><span><b>Bezoek &amp; uren</b><small>Troyentenhoflaan 42, Berchem</small></span></a>
  </nav>
- <p class="opennow" data-opennow>Ma, wo–za 9–16 u · zo 10–16 u</p>
+ <p class="opennow" data-opennow>Ma, wo–zo 9–16 u</p>
  <div class="drawer-cta"><a class="btn red" href="tel:+32483671312">Bellen</a><a class="btn ghost" href="https://www.google.com/maps/search/?api=1&amp;query=KOPVOL+Troyentenhoflaan+42+Antwerpen" target="_blank" rel="noopener">Route</a></div>
 </div>
 
@@ -535,7 +535,7 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
   <div>
    <span class="kicker">Kom langs</span>
    <h2 id="bezoek-h" class="reveal">Troyentenhoflaan 42, <em class="f">Berchem</em></h2>
-   <span class="opentag" data-opennow>Ma, wo–za 9–16 u · zo 10–16 u</span>
+   <span class="opentag" data-opennow>Ma, wo–zo 9–16 u</span>
    <ul class="hours" id="hours">
     <li data-d="1"><span>Maandag</span><b>09:00 – 16:00</b></li>
     <li data-d="2"><span>Dinsdag</span><b>Rustdag</b></li>
@@ -543,7 +543,7 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
     <li data-d="4"><span>Donderdag</span><b>09:00 – 16:00</b></li>
     <li data-d="5"><span>Vrijdag</span><b>09:00 – 16:00</b></li>
     <li data-d="6"><span>Zaterdag</span><b>09:00 – 16:00</b></li>
-    <li data-d="0"><span>Zondag</span><b>10:00 – 16:00</b></li>
+    <li data-d="0"><span>Zondag</span><b>09:00 – 16:00</b></li>
    </ul>
    <div class="contact">
     <span>Troyentenhoflaan 42, 2600 Antwerpen (Berchem)</span>
