@@ -74,9 +74,11 @@ const ICON_CART='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" str
  addEventListener("scroll",()=>$("#hdr").classList.toggle("scrolled",scrollY>8),{passive:true});
  /* actieve sectie */
  if("IntersectionObserver" in window){
-  const links=$$("nav.main a");
-  const so=new IntersectionObserver(en=>en.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+e.target.id))}),{rootMargin:"-40% 0px -55% 0px"});
+  const links=[...$$("nav.main a"),...$$(".mbar a[href^='#']")];let lock=0;
+  const setCur=id=>links.forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+id));
+  const so=new IntersectionObserver(en=>{if(Date.now()<lock)return;en.forEach(e=>{if(e.isIntersecting)setCur(e.target.id)})},{rootMargin:"-40% 0px -55% 0px"});
   ["kaart","shop","events","verhaal","bezoek"].forEach(i=>{const s=document.getElementById(i);s&&so.observe(s)});
+  document.addEventListener("click",e=>{const a=e.target.closest(".mbar a[href^='#'],nav.main a[href^='#'],.drawer a[href^='#']");if(a){lock=Date.now()+1200;setCur(a.getAttribute("href").slice(1))}});
   const ro=new IntersectionObserver(en=>en.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");ro.unobserve(e.target)}}),{threshold:.12});
   $$(".reveal").forEach(el=>ro.observe(el));
  }else{$$(".reveal").forEach(el=>el.classList.add("in"))}
