@@ -36,15 +36,16 @@ img{display:block;max-width:100%;height:auto}
 a{color:inherit}
 button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 h1,h2,h3{font-family:var(--fd);font-weight:800;line-height:.98;margin:0;letter-spacing:-.025em}
-h2{font-size:clamp(40px,5.6vw,72px)}
+h2{font-size:clamp(30px,3.4vw,46px)}
 h3{font-size:clamp(22px,2.4vw,30px)}
 .wrap{width:min(1200px,calc(100% - 40px));margin:0 auto}
 .kicker{display:block;font:600 12px/1 var(--fd);letter-spacing:.22em;text-transform:uppercase;color:var(--terra)}
-.lead{font-size:clamp(17px,1.35vw,20px);color:var(--muted);max-width:58ch;margin:0}
-section{padding:clamp(28px,4vw,56px) 0 clamp(64px,8vw,104px)}
-.sh{display:grid;grid-template-columns:1fr 1.2fr;gap:18px clamp(24px,5vw,80px);align-items:end;margin-bottom:clamp(24px,3.5vw,48px)}
-.sh .num{font:800 clamp(48px,6vw,84px)/1 var(--fd);color:transparent;-webkit-text-stroke:1.5px var(--terra);letter-spacing:-.04em;margin:0 0 8px}
-.dark .sh .num{-webkit-text-stroke-color:var(--crema)}
+.lead{font-size:16px;line-height:1.55;color:var(--muted);max-width:60ch;margin:0}
+section{padding:clamp(22px,3vw,38px) 0 clamp(56px,7vw,88px)}
+.sh{display:grid;grid-template-columns:1fr auto;gap:12px 28px;align-items:end;margin-bottom:18px}
+.sh h2{margin-top:6px}
+.sh .lead{margin-top:8px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:52px;padding:0 22px;border-radius:var(--rb);border:2px solid transparent;font:700 16px/1 var(--fb);text-decoration:none;transition:transform .15s ease,background .2s ease,color .2s ease;white-space:nowrap}
 .btn:active{transform:scale(.97)}
 .btn.red{background:var(--red);color:#fff}
@@ -130,7 +131,7 @@ nav.main a:hover,nav.main a[aria-current="true"]{background:var(--red2)}
 .facts small{display:block;margin-top:4px;color:var(--muted);font-size:13px}
 
 /* ===== kaart ===== */
-.chips{position:sticky;top:var(--hh);z-index:5;display:flex;gap:8px;overflow-x:auto;padding:12px 0;margin:0 0 26px;background:var(--cream);scrollbar-width:none}
+.chips{position:sticky;top:var(--hh);z-index:5;display:flex;gap:8px;overflow-x:auto;padding:10px 0;margin:0 0 6px;background:var(--cream);scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;min-height:40px;padding:0 16px;border-radius:var(--rb);border:1.5px solid var(--line);background:transparent;color:var(--ink);font:700 14px/1 var(--fb);text-decoration:none;display:inline-flex;align-items:center}
 .chip[aria-current="true"]{background:var(--esp);color:var(--cream);border-color:var(--esp)}
@@ -152,14 +153,13 @@ nav.main a:hover,nav.main a[aria-current="true"]{background:var(--red2)}
 
 /* ===== shop ===== */
 .shop{background:var(--milk);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.rail-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
 .arrows{display:flex;gap:8px}
 .arrows button{width:46px;height:46px;border-radius:var(--rb);border:1.5px solid var(--line);background:transparent;color:var(--ink);display:grid;place-items:center;transition:background .2s}
 .arrows button:hover{background:var(--cream2)}
 .products{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 0 18px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .products::-webkit-scrollbar{display:none}
-.prod{flex:0 0 min(76vw,290px);scroll-snap-align:start;background:var(--cream);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
-.prod .ph{position:relative;aspect-ratio:4/5;overflow:hidden;cursor:pointer;background:var(--cream2)}
+.prod{flex:0 0 min(72vw,290px);scroll-snap-align:start;background:var(--cream);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.prod .ph{position:relative;aspect-ratio:1;overflow:hidden;cursor:pointer;background:var(--cream2)}
 .prod .ph img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
 .prod:hover .ph img{transform:scale(1.04)}
 .badge{position:absolute;top:12px;left:12px;padding:7px 10px;border-radius:7px;background:var(--esp);color:var(--cream);font:700 11px/1 var(--fb);letter-spacing:.1em;text-transform:uppercase}
@@ -175,7 +175,7 @@ nav.main a:hover,nav.main a[aria-current="true"]{background:var(--red2)}
 .shopnote{margin-top:16px;display:flex;flex-wrap:wrap;gap:12px 26px;align-items:center;justify-content:space-between;font-size:14px;color:var(--muted)}
 .shopnote div{display:flex;flex-wrap:wrap;gap:8px 22px}
 .shopnote span{display:inline-flex;align-items:center;gap:8px}
-.shopnote span::before{content:"✓";color:var(--terra);font-weight:800}
+.shopnote div span::before{content:"✓";color:var(--terra);font-weight:800}
 .shopzo{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--rb);background:var(--cream2);font:600 13px/1 var(--fb);color:var(--ink)}
 .shopzo b{font-weight:800}
 
@@ -183,7 +183,7 @@ nav.main a:hover,nav.main a[aria-current="true"]{background:var(--red2)}
 .filters{display:flex;gap:8px;flex-wrap:wrap}
 .events .chip{color:var(--cream);border-color:var(--linel)}
 .events .chip[aria-current="true"]{background:var(--cream);color:var(--esp);border-color:var(--cream)}
-.evlist{display:grid;gap:14px;margin-top:28px}
+.evlist{display:grid;gap:12px}
 .ev{display:grid;grid-template-columns:92px 170px 1fr auto;grid-template-areas:"when ph body act";gap:0 22px;align-items:center;background:var(--esp2);border:1px solid var(--linel);border-radius:var(--r);padding:16px 18px 16px 16px}
 .ev .when{grid-area:when;text-align:center;padding-right:18px;border-right:2px dashed rgba(255,255,255,.2)}
 .ev .when b{display:block;font:800 44px/1 var(--fd);color:var(--crema);letter-spacing:-.03em}
@@ -363,9 +363,8 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
 /* ===== responsive ===== */
 @media (max-width:980px){
  .hero .grid,.story .grid,.visit .grid,.sh{grid-template-columns:1fr}
- .sh{align-items:start;gap:10px;margin-bottom:22px}
- .sh>div:first-child{display:flex;align-items:center;gap:12px}
- .sh .num{font-size:30px;margin:0;-webkit-text-stroke-width:1.2px}
+ .sh{align-items:start;gap:12px;margin-bottom:16px}
+ .tools{justify-content:flex-start}
  .hero-photo{justify-self:start;width:100%;max-width:520px}
  .hero-photo img{aspect-ratio:4/3}
  .facts .wrap{grid-template-columns:1fr 1fr}
@@ -486,7 +485,7 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
 
 <section id="kaart" aria-labelledby="kaart-h">
  <div class="wrap">
-  <div class="sh"><div><p class="num">01</p><span class="kicker">Op de kaart</span></div><div><h2 id="kaart-h" class="reveal">Elke dag vers, tot 16 uur</h2><p class="lead reveal">Alles wordt in onze eigen keuken bereid. Ontbijt kan de hele dag; de kaart hieronder is de volledige.</p></div></div>
+  <div class="sh"><div><span class="kicker">Op de kaart</span><h2 id="kaart-h" class="reveal">Elke dag vers, tot 16 uur</h2><p class="lead reveal">Alles wordt in onze eigen keuken bereid. Ontbijt kan de hele dag; de kaart hieronder is de volledige.</p></div></div>
   <nav class="chips" id="chips" aria-label="Categorieën"></nav>
   <div class="menu-cols" id="menucols"></div>
   <div class="kaart-foot reveal">
@@ -498,17 +497,15 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
 
 <section class="shop" id="shop" aria-labelledby="shop-h">
  <div class="wrap">
-  <div class="sh"><div><p class="num">02</p><span class="kicker">Keramiek uit het atelier</span></div><div><h2 id="shop-h" class="reveal">Neem je kopje mee naar huis</h2><p class="lead reveal">Elke tas en elk schoteltje wordt door Ilona met de hand gedraaid en gebakken in Berchem. Kleine oplages, dus kleine verschillen. Af te halen in de bar of verzonden binnen België.</p></div></div>
-  <div class="rail-head"><span class="shopzo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7l-8-4-8 4v10l8 4 8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>Webshop powered by <b>Shopzo</b></span><div class="arrows"><button type="button" id="prev" aria-label="Vorige"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button type="button" id="next" aria-label="Volgende"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div></div>
+  <div class="sh"><div><span class="kicker">Keramiek uit het atelier</span><h2 id="shop-h" class="reveal">Neem je kopje mee naar huis</h2><p class="lead reveal">Elke tas en elk schoteltje wordt door Ilona met de hand gedraaid en gebakken in Berchem. Kleine oplages, dus kleine verschillen. Af te halen in de bar of verzonden binnen België.</p></div><div class="tools"><div class="arrows"><button type="button" id="prev" aria-label="Vorige"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button type="button" id="next" aria-label="Volgende"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div></div></div>
   <div class="products" id="products"></div>
-  <div class="shopnote"><div><span>Afhalen in de bar: gratis</span><span>Verzending België: €6,95, gratis vanaf €60</span><span>Bancontact, Payconiq of kaart</span><span>Vaatwasserbestendig</span></div></div>
+  <div class="shopnote"><div><span>Afhalen in de bar: gratis</span><span>Verzending België: €6,95, gratis vanaf €60</span><span>Bancontact, Payconiq of kaart</span><span>Vaatwasserbestendig</span></div><span class="shopzo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7l-8-4-8 4v10l8 4 8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>Webshop powered by <b>Shopzo</b></span></div>
  </div>
 </section>
 
 <section class="dark events" id="events" aria-labelledby="events-h">
  <div class="wrap">
-  <div class="sh"><div><p class="num">03</p><span class="kicker">Workshops &amp; events</span></div><div><h2 id="events-h" class="reveal">Na vieren wordt KOPVOL Coupevol</h2><p class="lead reveal">Kleine workshops in de koffiebar en af en toe een avond met cava, cocktails en een kaasplankje van Van Tricht. Schrijf je online in; plaatsen zijn beperkt.</p></div></div>
-  <div class="filters" role="group" aria-label="Filter" id="evfilters"><button class="chip" data-f="all" aria-current="true" type="button">Alles</button><button class="chip" data-f="workshop" type="button">Workshops</button><button class="chip" data-f="coupevol" type="button">Coupevol</button></div>
+  <div class="sh"><div><span class="kicker">Workshops &amp; events</span><h2 id="events-h" class="reveal">Na vieren wordt KOPVOL Coupevol</h2><p class="lead reveal">Kleine workshops in de koffiebar en af en toe een avond met cava, cocktails en een kaasplankje van Van Tricht. Schrijf je online in; plaatsen zijn beperkt.</p></div><div class="tools"><div class="filters" role="group" aria-label="Filter" id="evfilters"><button class="chip" data-f="all" aria-current="true" type="button">Alles</button><button class="chip" data-f="workshop" type="button">Workshops</button><button class="chip" data-f="coupevol" type="button">Coupevol</button></div></div></div>
   <div class="evlist" id="evlist"></div>
   <div class="cms-hint reveal"><p><b>Zelf te beheren.</b> Robin en Ilona voegen in een eenvoudig beheerscherm nieuwe workshops toe en zien de inschrijvingen binnenlopen.</p><button class="btn red sm" type="button" data-admin>Bekijk het beheerscherm</button></div>
  </div>
@@ -516,7 +513,7 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
 
 <section class="story" id="verhaal" aria-labelledby="verhaal-h">
  <div class="wrap">
-  <div class="sh"><div><p class="num">04</p><span class="kicker">Ons verhaal</span></div><div><h2 id="verhaal-h" class="reveal">Een koffiebar voor de buurt</h2></div></div>
+  <div class="sh"><div><span class="kicker">Ons verhaal</span><h2 id="verhaal-h" class="reveal">Een koffiebar voor de buurt</h2></div></div>
   <div class="grid">
    <div>
     <p class="reveal">Robin en Ilona wonen zelf in de Pulhof en misten er een plek om overdag rustig een koffie te drinken of een eenvoudige lunch te eten. Dus openden ze er zelf één, in de Troyentenhoflaan: een dagzaak voor iedereen. Even binnenspringen na het afzetten van de kinderen, werken met een flat white naast je laptop, of bijbabbelen op het terras.</p>
@@ -536,7 +533,7 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
 
 <section class="reviews" id="reviews" aria-labelledby="reviews-h">
  <div class="wrap">
-  <div class="sh"><div><p class="num">05</p><span class="kicker">Wat gasten zeggen</span></div><div><h2 id="reviews-h" class="reveal">4,6 op Google uit 42 reviews</h2></div></div>
+  <div class="sh"><div><span class="kicker">Wat gasten zeggen</span><h2 id="reviews-h" class="reveal">4,6 op Google uit 42 reviews</h2></div></div>
   <div class="quotes">
    <blockquote class="reveal"><div class="stars" aria-label="5 sterren">★★★★★</div><p>Nu al mijn favoriete nieuwe koffiebar en lunchplek! Zeer fijn zonovergoten terras en altijd bediening met een grote glimlach op het gezicht! Ik ga nog terug!</p><footer>Laura</footer></blockquote>
    <blockquote class="reveal"><div class="stars" aria-label="5 sterren">★★★★★</div><p>Lekkere koffietjes, mooi interieur, vriendelijk personeel en ook heel aangenaam zitten op het terras. De flat white en brioche pulled chicken zijn mijn favoriet, maar ook de babyccino was een succes.</p><footer>Amber</footer></blockquote>
@@ -547,7 +544,7 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
 
 <section class="visit" id="bezoek" aria-labelledby="bezoek-h">
  <div class="wrap">
-  <div class="sh"><div><p class="num">06</p><span class="kicker">Kom langs</span></div><div><h2 id="bezoek-h" class="reveal">Troyentenhoflaan 42, Berchem</h2></div></div>
+  <div class="sh"><div><span class="kicker">Kom langs</span><h2 id="bezoek-h" class="reveal">Troyentenhoflaan 42, Berchem</h2></div></div>
   <div class="grid">
    <div>
     <span class="opentag" data-opennow>Ma, wo–zo 9–16 u</span>
