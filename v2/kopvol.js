@@ -72,6 +72,7 @@ const ICON_CART='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" str
  document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(root.classList.contains("menu-open")){set(false);btn.focus()}closeOverlays()}});
  matchMedia("(min-width:901px)").addEventListener("change",m=>{if(m.matches)set(false)});
  addEventListener("scroll",()=>$("#hdr").classList.toggle("scrolled",scrollY>8),{passive:true});
+ const fixPad=()=>{document.documentElement.style.scrollPaddingTop=$("#hdr").offsetHeight+"px"};fixPad();addEventListener("resize",fixPad);
  /* actieve sectie */
  if("IntersectionObserver" in window){
   const links=[...$$("nav.main a"),...$$(".mbar a[href^='#']")];let lock=0;
@@ -86,7 +87,7 @@ const ICON_CART='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" str
 
 /* ============ OPEN / GESLOTEN ============ */
 (function(){
- const H={0:[10,16],1:[9,16],2:null,3:[9,16],4:[9,16],5:[9,16],6:[9,16]};
+ const H={0:[9,16],1:[9,16],2:null,3:[9,16],4:[9,16],5:[9,16],6:[9,16]};
  try{
   const p=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Brussels",weekday:"short",hour:"numeric",minute:"numeric",hour12:false}).formatToParts(new Date()),o={};p.forEach(x=>o[x.type]=x.value);
   const d=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(o.weekday),h=(+o.hour)+(+o.minute)/60,t=H[d];let txt,closed=false;
