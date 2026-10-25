@@ -1,5 +1,5 @@
 /* ============ DATA ============ */
-const PH={pulhof:"../img/pulhof.jpg",spikkel:"../img/spikkel.jpg",ochtend:"../img/ochtend.jpg",robijn:"../img/robijn.jpg",tumbler:"../img/tumbler.jpg"};
+const PH={zon:"../img/latte-zon.jpg",pulhof:"../img/pulhof.jpg",spikkel:"../img/spikkel.jpg",ochtend:"../img/ochtend.jpg",robijn:"../img/robijn.jpg",tumbler:"../img/tumbler.jpg"};
 const IMG={pulhof:"../img/pulhof-sq.jpg",spikkel:"../img/spikkel-sq.jpg",ochtend:"../img/ochtend-sq.jpg",robijn:"../img/robijn-sq.jpg",tumbler:"../img/tumbler-sq.jpg",
  ev1:PH.ochtend,ev2:PH.robijn,ev3:PH.spikkel,ev4:PH.tumbler};
 document.querySelectorAll("img[data-src]").forEach(i=>{i.src=PH[i.dataset.src]});
@@ -68,15 +68,17 @@ const ICON_CART='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" str
  const root=document.documentElement,btn=$("#menubtn"),dr=$("#drawer"),lbl=$(".lbl",btn);
  function set(o){root.classList.toggle("menu-open",o);btn.setAttribute("aria-expanded",o);lbl.textContent=o?"Sluiten":"Menu"}
  btn.addEventListener("click",()=>set(!root.classList.contains("menu-open")));
- dr.addEventListener("click",e=>{if(e.target.closest("a"))set(false)});
+ dr.addEventListener("click",e=>{if(e.target.closest("a")||e.target.closest("[data-menu-close]"))set(false)});$("#mback").addEventListener("click",()=>set(false));
  document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(root.classList.contains("menu-open")){set(false);btn.focus()}closeOverlays()}});
  matchMedia("(min-width:901px)").addEventListener("change",m=>{if(m.matches)set(false)});
  addEventListener("scroll",()=>$("#hdr").classList.toggle("scrolled",scrollY>8),{passive:true});
  /* actieve sectie */
  if("IntersectionObserver" in window){
-  const links=$$("nav.main a");
-  const so=new IntersectionObserver(en=>en.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+e.target.id))}),{rootMargin:"-40% 0px -55% 0px"});
+  const links=[...$$("nav.main a"),...$$(".mbar a[href^='#']")];let lock=0;
+  const setCur=id=>links.forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+id));
+  const so=new IntersectionObserver(en=>{if(Date.now()<lock)return;en.forEach(e=>{if(e.isIntersecting)setCur(e.target.id)})},{rootMargin:"-40% 0px -55% 0px"});
   ["kaart","shop","events","verhaal","bezoek"].forEach(i=>{const s=document.getElementById(i);s&&so.observe(s)});
+  document.addEventListener("click",e=>{const a=e.target.closest(".mbar a[href^='#'],nav.main a[href^='#'],.drawer a[href^='#']");if(a){lock=Date.now()+1200;setCur(a.getAttribute("href").slice(1))}});
   const ro=new IntersectionObserver(en=>en.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");ro.unobserve(e.target)}}),{threshold:.12});
   $$(".reveal").forEach(el=>ro.observe(el));
  }else{$$(".reveal").forEach(el=>el.classList.add("in"))}
