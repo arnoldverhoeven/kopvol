@@ -9,7 +9,7 @@
 <meta property="og:title" content="KOPVOL — koffiebar, keramiek & workshops in Berchem">
 <meta property="og:description" content="Gevuld tot aan de rand. Troyentenhoflaan 42, Berchem.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://kopvol.agv-it.be/img/latte-zon.jpg">
+<meta property="og:image" content="https://kopvol.agv-it.be/img/hero-bowl.jpg">
 <link rel="canonical" href="https://kopvol.agv-it.be/v2/">
 <link rel="icon" href="../img/logo.png">
 <style>
@@ -146,9 +146,10 @@ nav.main a:hover,nav.main a[aria-current="true"]{background:var(--red2)}
 .mi small{grid-column:1/-1;color:var(--muted);font-size:14px}
 .mi .tag{display:inline-block;margin-left:8px;padding:3px 7px;border-radius:6px;background:var(--red);color:#fff;font:700 10px/1 var(--fb);letter-spacing:.08em;text-transform:uppercase;vertical-align:middle}
 .kaart-foot{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-top:40px;align-items:stretch}
-.kaart-foot img{width:100%;height:100%;min-height:240px;object-fit:cover;border-radius:var(--r)}
+.kaart-foot img{width:100%;height:100%;min-height:240px;max-height:440px;object-fit:cover;object-position:50% 45%;border-radius:var(--r)}
 .note{padding:22px 24px;border-radius:var(--r);background:var(--esp);color:var(--cream);display:flex;flex-direction:column;justify-content:center;gap:10px}
 .note b{font:800 24px/1.05 var(--fd);letter-spacing:-.02em}
+.note .kicker{color:var(--terra2);margin-bottom:2px}
 .note p{margin:0;color:#C9B8A8;font-size:15px}
 
 /* ===== shop ===== */
@@ -219,6 +220,13 @@ nav.main a:hover,nav.main a[aria-current="true"]{background:var(--red2)}
 .partners div+div{padding-left:16px}
 .partners b{display:block;font:800 20px/1.1 var(--fd);letter-spacing:-.02em}
 .partners small{color:var(--muted);font-size:13px}
+
+/* ===== fotostrook ===== */
+.feed{padding-bottom:clamp(40px,5vw,64px)}
+.feedrow{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.feedrow a{display:block;aspect-ratio:1;border-radius:var(--r);overflow:hidden;background:var(--cream2)}
+.feedrow img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.feedrow a:hover img{transform:scale(1.04)}
 
 /* ===== reviews ===== */
 .reviews{background:var(--milk);border-top:1px solid var(--line)}
@@ -360,6 +368,14 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
 
 
 
+/* ===== productgalerij ===== */
+.pm .pmg{position:relative;min-height:320px}
+.pm .pmg>img{width:100%;height:100%;object-fit:cover;min-height:320px;display:block}
+.thumbs{position:absolute;left:12px;bottom:12px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 24px)}
+.thumbs button{width:46px;height:46px;padding:0;border:2px solid rgba(255,255,255,.75);border-radius:9px;overflow:hidden;background:var(--cream2);box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.thumbs button[aria-current="true"]{border-color:var(--terra)}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block;min-height:0}
+
 /* ===== responsive ===== */
 @media (max-width:980px){
  .hero .grid,.story .grid,.visit .grid,.sh{grid-template-columns:1fr}
@@ -376,6 +392,9 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
  .partners{grid-template-columns:1fr 1fr}
  .partners div:nth-child(2){border-right:0}
  .partners div:nth-child(3){padding-left:0}
+ .feedrow{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;scrollbar-width:none}
+ .feedrow::-webkit-scrollbar{display:none}
+ .feedrow a{flex:0 0 min(44vw,220px);scroll-snap-align:start}
  .quotes{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;scrollbar-width:none}
  .quotes::-webkit-scrollbar{display:none}
  .quotes blockquote{flex:0 0 min(84vw,380px);scroll-snap-align:start}
@@ -417,7 +436,8 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
  .mg h3{font-size:24px}
  .prod h3{font-size:22px}
  .pm,.em{grid-template-columns:1fr}
- .pm img{min-height:220px;aspect-ratio:4/3}
+ .pm .pmg{min-height:0}
+ .pm .pmg>img{min-height:0;aspect-ratio:4/3}
  .em img{min-height:0;aspect-ratio:16/9}
  .specs{grid-template-columns:1fr}
  .form .two{grid-template-columns:1fr}
@@ -469,7 +489,7 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
    <div class="btns"><a class="btn red" href="#kaart">Bekijk de kaart</a><a class="btn outl" href="#shop">Shop de keramiek</a></div>
   </div>
   <div class="hero-photo reveal">
-   <img src="" data-src="robijn" alt="Cappuccino in een geribbelde dieprode mok op de vensterbank" width="733" height="1000" fetchpriority="high">
+   <img src="" data-src="herobowl" alt="Latte met hartje in een gespikkelde kom op een houten plateau, met een kaars en een plant" width="418" height="522" fetchpriority="high">
    <span class="hp-badge" data-opennow>Ma, wo–zo 9–16 u</span>
    <div class="hp-card"><b>4,6 <span class="stars" aria-hidden="true">★</span></b><small>42 Google-reviews</small></div>
   </div>
@@ -489,8 +509,8 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
   <nav class="chips" id="chips" aria-label="Categorieën"></nav>
   <div class="menu-cols" id="menucols"></div>
   <div class="kaart-foot reveal">
-   <img src="" data-src="tumbler" alt="Flat white in een gespikkeld kopje op een houten schoteltje" width="1000" height="914" loading="lazy">
-   <div class="note"><b>Alles ook ijskoud.</b><p>Iced latte, cold brew en huisgemaakte iced tea staan het hele jaar op de kaart. Glutenvrij of vegan? Vraag ernaar, we denken graag mee.</p><p>Groter gezelschap of een vergadering met ontbijt? Bel even, dan houden we de grote tafel vrij.</p></div>
+   <img src="" data-src="andy" alt="Zwarte koffie in een witte tas met rode rand en de A van Andy Roasters, op een houten plankje" width="699" height="1000" loading="lazy">
+   <div class="note"><span class="kicker">Onze koffie</span><b>Andy Roasters, gebrand in Antwerpen</b><p>Alle koffie op de kaart komt van Andy Roasters: single origins die wisselen met het seizoen, van espresso tot flat white. Alles ook ijskoud, met iced latte, cold brew en huisgemaakte iced tea het hele jaar door.</p><p>Glutenvrij of vegan? Vraag ernaar, we denken graag mee.</p></div>
   </div>
  </div>
 </section>
@@ -527,6 +547,20 @@ table.reg td:first-child,table.reg td:nth-child(2){white-space:nowrap}
     </div>
    </div>
    <div class="pic reveal"><img src="" data-src="spikkel" alt="Espresso in een gespikkeld kopje op de toog, met de espressomachine op de achtergrond" width="1000" height="833" loading="lazy"></div>
+  </div>
+ </div>
+</section>
+
+<section class="feed" id="feed" aria-labelledby="feed-h">
+ <div class="wrap">
+  <div class="sh"><div><span class="kicker">Uit de bar</span><h2 id="feed-h" class="reveal">Elke dag een kop vol</h2></div><div class="tools"><a class="btn ghost sm" href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener">Volg @kopvol.koffiebar</a></div></div>
+  <div class="feedrow reveal">
+   <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener"><img src="" data-src="kaars" alt="Latte met hartje in een gespikkelde kom, bij kaarslicht" loading="lazy"></a>
+   <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener"><img src="" data-src="koekje" alt="Latte met een chocolate chip cookie" loading="lazy"></a>
+   <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener"><img src="" data-src="andy" alt="Zwarte koffie in een tas van Andy Roasters" loading="lazy"></a>
+   <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener"><img src="" data-src="fruit" alt="Latte met rood fruit en een sapje" loading="lazy"></a>
+   <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener"><img src="" data-src="croissant" alt="Latte met een croissant en eucalyptus" loading="lazy"></a>
+   <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener"><img src="" data-src="boeken" alt="Latte tussen boeken en een plant" loading="lazy"></a>
   </div>
  </div>
 </section>

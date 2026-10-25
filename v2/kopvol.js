@@ -1,7 +1,7 @@
 /* ============ DATA ============ */
-const PH={zon:"../img/latte-zon.jpg",pulhof:"../img/pulhof.jpg",spikkel:"../img/spikkel.jpg",ochtend:"../img/ochtend.jpg",robijn:"../img/robijn.jpg",tumbler:"../img/tumbler.jpg"};
+const PH={zon:"../img/latte-zon.jpg",herobowl:"../img/hero-bowl.jpg",andy:"../img/andy.jpg",boeken:"../img/boeken.jpg",koekje:"../img/koekje.jpg",fruit:"../img/fruit.jpg",croissant:"../img/croissant.jpg",kaars:"../img/kaars.jpg",pulhof:"../img/pulhof.jpg",spikkel:"../img/spikkel.jpg",ochtend:"../img/ochtend.jpg",robijn:"../img/robijn.jpg",tumbler:"../img/tumbler.jpg"};
 const IMG={pulhof:"../img/pulhof-sq.jpg",spikkel:"../img/spikkel-sq.jpg",ochtend:"../img/ochtend-sq.jpg",robijn:"../img/robijn-sq.jpg",tumbler:"../img/tumbler-sq.jpg",
- ev1:PH.ochtend,ev2:PH.robijn,ev3:PH.spikkel,ev4:PH.tumbler};
+ ev1:PH.ochtend,ev2:PH.robijn,ev3:PH.croissant,ev4:PH.kaars};
 document.querySelectorAll("img[data-src]").forEach(i=>{i.src=PH[i.dataset.src]});
 
 const MENU={
@@ -19,7 +19,7 @@ const PRODUCTS=[
  {id:"spikkel",name:"Spikkel",sub:"Espressotas met schoteltje · crème gespikkeld",price:29,img:IMG.spikkel,full:PH.spikkel,badge:"Set",stock:9,
   desc:"Klein maar fijn: een espressotas met bijpassend schoteltje in crèmekleurig glazuur met donkere spikkels. Het schoteltje past ook perfect onder een koekje.",
   specs:[["Inhoud","120 ml"],["Hoogte","6 cm"],["Diameter","7 cm"],["Schoteltje","Ø 13 cm"],["Klei","Gespikkeld steengoed"],["Glazuur","Glanzend, loodvrij"],["Vaatwasser","Ja"],["Microgolf","Ja"]]},
- {id:"ochtend",name:"Ochtend",sub:"Latte bowl · zand gespikkeld",price:36,img:IMG.ochtend,full:PH.ochtend,badge:"Nieuw",stock:4,
+ {id:"ochtend",name:"Ochtend",sub:"Latte bowl · zand gespikkeld",price:36,img:IMG.ochtend,full:PH.ochtend,gallery:[PH.ochtend,PH.kaars,PH.koekje,PH.fruit,PH.croissant,PH.boeken],badge:"Nieuw",stock:4,
   desc:"Een brede, lage kom met oor — voor wie zijn latte of cortado graag met beide handen vasthoudt. Zandkleurig glazuur met een fijne spikkel, zoals de kopjes in de bar.",
   specs:[["Inhoud","350 ml"],["Hoogte","7 cm"],["Diameter","11 cm"],["Gewicht","± 340 g"],["Klei","Gespikkeld steengoed"],["Glazuur","Zijdeglans, loodvrij"],["Vaatwasser","Ja"],["Microgolf","Ja"]]},
  {id:"robijn",name:"Robijn",sub:"Geribbelde mok · dieprood",price:38,img:IMG.robijn,full:PH.robijn,badge:"Nog 3",stock:3,
@@ -49,7 +49,7 @@ const SEED_REGS=[
 ];
 
 /* ============ STATE ============ */
-const KEY="kopvol_v3";
+const KEY="kopvol_v3b";
 let DB=load();
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.events)return d}catch(e){}return {events:structuredClone(SEED_EVENTS),regs:structuredClone(SEED_REGS),cart:[]}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
@@ -149,7 +149,7 @@ function renderCart(){
 function openCart(){renderCart();openOv("#cartov")}
 function productModal(id){
  const p=PRODUCTS.find(x=>x.id===id);
- $("#modalbox").innerHTML=`<button class="x" type="button" data-close aria-label="Sluiten">×</button><div class="pm"><img src="${p.full}" alt="${esc(p.name)}"><div class="info"><span class="kicker">Handgemaakt in Berchem</span><h3>${esc(p.name)}</h3><div class="sub">${esc(p.sub)}</div><p style="margin:0;font-size:15px;color:var(--muted)">${esc(p.desc)}</p><ul class="specs">${p.specs.map(([k,v])=>`<li><span>${esc(k)}</span><b>${esc(v)}</b></li>`).join("")}</ul><div class="row"><span class="price">${eur(p.price)}</span><div class="qty"><button type="button" data-mq="-1" aria-label="Minder">−</button><span id="mq">1</span><button type="button" data-mq="1" aria-label="Meer">+</button></div></div><div class="stock ${p.stock<=3?"low":""}">${p.stock<=3?"Nog maar "+p.stock+" beschikbaar":"Op voorraad — "+p.stock+" stuks"}</div><div class="row"><button class="btn red" type="button" data-madd="${p.id}" style="flex:1">${ICON_CART}In mandje</button></div></div></div>`;
+ $("#modalbox").innerHTML=`<button class="x" type="button" data-close aria-label="Sluiten">×</button><div class="pm"><div class="pmg"><img src="${p.full}" alt="${esc(p.name)}" id="pmimg">${p.gallery?`<div class="thumbs" role="group" aria-label="Meer foto's">${p.gallery.map((g,i)=>`<button type="button" data-thumb="${i}" aria-current="${i===0}" aria-label="Foto ${i+1}"><img src="${g}" alt=""></button>`).join("")}</div>`:""}</div><div class="info"><span class="kicker">Handgemaakt in Berchem</span><h3>${esc(p.name)}</h3><div class="sub">${esc(p.sub)}</div><p style="margin:0;font-size:15px;color:var(--muted)">${esc(p.desc)}</p><ul class="specs">${p.specs.map(([k,v])=>`<li><span>${esc(k)}</span><b>${esc(v)}</b></li>`).join("")}</ul><div class="row"><span class="price">${eur(p.price)}</span><div class="qty"><button type="button" data-mq="-1" aria-label="Minder">−</button><span id="mq">1</span><button type="button" data-mq="1" aria-label="Meer">+</button></div></div><div class="stock ${p.stock<=3?"low":""}">${p.stock<=3?"Nog maar "+p.stock+" beschikbaar":"Op voorraad — "+p.stock+" stuks"}</div><div class="row"><button class="btn red" type="button" data-madd="${p.id}" style="flex:1">${ICON_CART}In mandje</button></div></div></div>`;
  openOv("#modal");
 }
 function checkout(){
@@ -183,6 +183,7 @@ document.addEventListener("click",e=>{
  if(t.closest("#cartbtn")){openCart();return}
  const q=t.closest("[data-q]");if(q){const it=DB.cart.find(x=>x.id===q.dataset.q),p=PRODUCTS.find(x=>x.id===q.dataset.q);const n=it.q+(+q.dataset.d);if(n>p.stock){toast("Nog maar "+p.stock+" op voorraad");return}if(n<=0)DB.cart=DB.cart.filter(x=>x.id!==it.id);else it.q=n;save();updateCartBtn();renderCart();return}
  const r=t.closest("[data-rm]");if(r){DB.cart=DB.cart.filter(x=>x.id!==r.dataset.rm);save();updateCartBtn();renderCart();return}
+ const th=t.closest("[data-thumb]");if(th){const img=$("#pmimg");img.src=th.querySelector("img").src;$$(".thumbs button").forEach(b=>b.setAttribute("aria-current",b===th));return}
  const mq=t.closest("[data-mq]");if(mq){const s=$("#mq");s.textContent=Math.max(1,Math.min(12,+s.textContent+(+mq.dataset.mq)));return}
  const ma=t.closest("[data-madd]");if(ma){addToCart(ma.dataset.madd,+$("#mq").textContent,null,true);closeOverlays();openCart();return}
  if(t.closest("#checkout")){checkout();return}
