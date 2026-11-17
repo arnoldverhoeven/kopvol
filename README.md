@@ -8,4 +8,5 @@ Concept voor [KOPVOL koffiebar](https://www.instagram.com/kopvol.koffiebar/), Tr
 - Webshop en workshops werken in demo-modus (localStorage). Beheer: pincode 2600.
 - `v2/` — tweede ontwerpvariant (zelfde inhoud en palet, andere typografie en opbouw); deelt de foto's in `img/`, eigen fonts in `v2/fonts/`
 - `v3/` — derde versie na feedback van KOPVOL: minder tekst, keramiek als teaser (te koop in de bar), tafelreservatie vanaf 6 personen met instelbare openingsuren/sluitingsdagen/tafels in het mini-CMS, menukaart achter de knop Menu
+- `v4/` — sobere versie volgens het brandbook (Crushed Berry en Ivory Mist, gecentreerd): startpagina vertelt enkel het verhaal; Menu, Workshops, Reserveren en Bezoek als aparte pagina's via de navigatie; echte menukaart en foto's uit het brandbook
 - Volgende stap: Shopzo-koppeling voor de keramiek, Supabase voor events/inschrijvingen.
