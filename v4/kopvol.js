@@ -62,9 +62,6 @@ function route(){
  scrollTo({top:0,left:0,behavior:"instant"});
 }
 addEventListener("hashchange",route);
-/* op de startpagina draagt het grote logo de naam; het kleine logo in de balk verschijnt pas bij het scrollen */
-if("IntersectionObserver" in window){new IntersectionObserver(es=>root.classList.toggle("hl",es[0].isIntersecting),{rootMargin:"-70px 0px 0px 0px"}).observe($("#herologo"))}
-
 /* ============ OPENINGSUREN & SLUITINGEN ============ */
 function closureFor(iso){return S().closed.find(c=>c.from<=iso&&iso<=c.to)||null}
 function hoursFor(iso){if(closureFor(iso))return null;return S().hours[dOf(iso).getDay()]||null}

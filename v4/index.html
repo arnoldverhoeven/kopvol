@@ -11,6 +11,7 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://kopvol.netlify.app/v4/img/machine.jpg">
 <link rel="canonical" href="https://kopvol.netlify.app/v4/">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preload" href="fonts/gilroy-medium.woff" as="font" type="font/woff" crossorigin>
@@ -42,11 +43,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .nav a[aria-current]:not(.cta){background:rgba(150,34,34,.13);color:var(--berry)}
 .nav a.cta:hover{background:transparent;color:var(--berry)}
 .brand{display:grid;place-items:center;width:156px;height:44px;text-decoration:none}
-.brand>*{grid-area:1/1;transition:opacity .35s ease}
 .brand img{width:156px}
-.brand .sw{width:38px;height:38px;opacity:0}
-html[data-page=home].hl .brand img{opacity:0}
-html[data-page=home].hl .brand .sw{opacity:1}
 
 /* ---- pagina's ---- */
 .page{display:none}
@@ -71,14 +68,14 @@ h2{font-size:clamp(26px,3.6vw,42px)}
 .pic:hover img{transform:scale(1.045)}
 
 /* ---- verhaal ---- */
-.hero{display:flex;flex-direction:column;align-items:center;padding:clamp(30px,4vw,52px) var(--pad) clamp(26px,3vw,40px)}
-.hero h1{width:min(100%,720px)}
-.hero h1 img{width:100%}
-.hero .tag{margin-top:clamp(18px,2vw,26px)}
+.hero{display:flex;flex-direction:column;align-items:center;padding:clamp(36px,5vw,72px) var(--pad) clamp(18px,2.5vw,32px)}
+.vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.hero .hsw{display:block;width:clamp(150px,19vw,230px);height:clamp(150px,19vw,230px);vertical-align:baseline}
+.hero .tag{margin-top:clamp(22px,2.6vw,34px);text-wrap:balance}
 .open,.trio{position:relative;max-width:calc(1120px + 2*var(--pad));margin:0 auto;padding:0 var(--pad)}
 .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:start}
-.open .pic{aspect-ratio:2/1}
-.open .pic img{object-position:50% 84%}
+.open{max-width:calc(560px + 2*var(--pad))}
+.open .pic{aspect-ratio:3/2}
 .trio .pic{aspect-ratio:4/5}
 .trio .pic:nth-of-type(2){margin-top:64px}
 .sticker{position:absolute;z-index:2;top:-58px;right:calc(var(--pad) - 34px);width:136px;height:136px;color:var(--berry);transform:rotate(-8deg);pointer-events:none}
@@ -265,13 +262,12 @@ table.t small{font-size:13px}
  .nav{display:none}
  .brand{grid-column:2}
  .top .burger{display:grid;grid-column:3;justify-self:end}
- .open .pic{aspect-ratio:4/3}
- .open .pic img{object-position:50% 62%}
+ .open{max-width:calc(250px + 2*var(--pad))}
  .trio{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
  .trio .pic:first-of-type{grid-column:1/-1}
  .trio .pic:nth-of-type(2){margin-top:0}
  .trio .pic:nth-of-type(n+2){aspect-ratio:1/1}
- .sticker{width:104px;height:104px;top:-44px;right:calc(var(--pad) - 8px)}
+ .sticker{width:92px;height:92px;top:-38px;right:calc(var(--pad) - 14px)}
  .card{grid-template-columns:minmax(0,1fr);max-width:400px;gap:0}
  .favs{text-align:left}
  .food .cols{grid-template-columns:1fr}
@@ -296,7 +292,7 @@ table.t small{font-size:13px}
 
 <header class="top">
  <nav class="nav l" aria-label="Navigatie links"><a href="#/menu" data-nav="menu">Menu</a><a href="#/workshops" data-nav="workshops">Workshops</a></nav>
- <a class="brand" href="#/" aria-label="KOPVOL, naar de startpagina"><img src="img/logo-berry.png" alt="" width="1400" height="270"><svg class="sw"><use href="#sw"/></svg></a>
+ <a class="brand" href="#/" aria-label="KOPVOL, naar de startpagina"><img src="img/logo-berry.png" alt="" width="1400" height="270"></a>
  <nav class="nav r" aria-label="Navigatie rechts"><a href="#/bezoek" data-nav="bezoek">Bezoek</a><a class="cta" href="#/reserveren" data-nav="reserveren">Reserveren</a></nav>
  <button class="rb burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Navigatie openen"><span><i></i><i></i></span></button>
 </header>
@@ -316,14 +312,11 @@ table.t small{font-size:13px}
 <!-- ================= VERHAAL ================= -->
 <section class="page on" data-page="home">
  <div class="hero">
-  <h1 id="herologo"><img src="img/logo-berry.png" alt="KOPVOL" width="1400" height="270" fetchpriority="high"></h1>
+  <h1 class="vh">KOPVOL, koffiebar in Berchem</h1>
+  <svg class="sw hsw" aria-hidden="true"><use href="#sw"/></svg>
   <p class="tag">Een kopvol ideeën vraagt om een kopvol koffie.</p>
  </div>
- <div class="open">
-  <div class="sticker" aria-hidden="true"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="100" fill="currentColor"/><g class="ring"><path id="ringp" d="M26,100a74,74 0 1,1 148,0a74,74 0 1,1 -148,0" fill="none"/><text><textPath href="#ringp" textLength="456">VERS GEZET • VERS GEDACHT • VERS GEZET • VERS GEDACHT •</textPath></text></g><use href="#sw" x="61" y="61" width="78" height="78"/></svg></div>
-  <figure class="pic"><img src="img/lattes.jpg" alt="Twee koffies in gespikkelde kommen op een houten plateau, één met de swirl in het melkschuim, in de koffiebar" width="1440" height="960" fetchpriority="high"></figure>
- </div>
- <div class="gap"></div>
+ <div class="gap s"></div>
  <div class="txt rv">
   <h2>Een plek voor wat<br>nog moet gebeuren.</h2>
   <div class="gap xs" style="height:28px"></div>
@@ -331,6 +324,11 @@ table.t small{font-size:13px}
   <p>Een plek om ideeën te laten groeien, bij te praten met vrienden, deel te nemen aan workshops of om gewoon even te ontsnappen aan de drukte van de dag. Overdag een gezellige koffiebar, later op de avond een plek vol inspiratie, events en nieuwe connecties.</p>
   <p>De naam zegt het zelf: een kopvol koffie én een kopvol ideeën.<br>Dus neem plaats, laad op en voel je thuis.</p>
   <p class="by">Robin &amp; Ilona</p>
+ </div>
+ <div class="gap"></div>
+ <div class="open">
+  <div class="sticker" aria-hidden="true"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="100" fill="currentColor"/><g class="ring"><path id="ringp" d="M26,100a74,74 0 1,1 148,0a74,74 0 1,1 -148,0" fill="none"/><text><textPath href="#ringp" textLength="456">VERS GEZET • VERS GEDACHT • VERS GEZET • VERS GEDACHT •</textPath></text></g><use href="#sw" x="61" y="61" width="78" height="78"/></svg></div>
+  <figure class="pic"><img src="img/lattes.jpg" alt="Twee koffies in gespikkelde kommen op een houten plateau, één met de swirl in het melkschuim, in de koffiebar" width="1440" height="960" loading="lazy"></figure>
  </div>
  <div class="gap"></div>
  <div class="band"><div class="in rv">
