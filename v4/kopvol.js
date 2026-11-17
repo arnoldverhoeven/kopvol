@@ -1,4 +1,4 @@
-/* KOPVOL — website-concept v4 (sober). Demo: data in localStorage; in productie Supabase. */
+/* KOPVOL, website-concept v4 (sober). Demo: data in localStorage; in productie Supabase. */
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const eur=n=>"€ "+(Number.isInteger(n)?n:n.toFixed(2).replace(".",","));
@@ -46,7 +46,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
 const S=()=>DB.settings;
 
 /* ============ NAVIGATIE ============ */
-const PAGES={home:"KOPVOL — koffiebar in Berchem",menu:"Menu — KOPVOL",workshops:"Workshops — KOPVOL",reserveren:"Reserveren — KOPVOL",bezoek:"Bezoek — KOPVOL"};
+const PAGES={home:"KOPVOL | Koffiebar in Berchem",menu:"Menu | KOPVOL",workshops:"Workshops | KOPVOL",reserveren:"Reserveren | KOPVOL",bezoek:"Bezoek | KOPVOL"};
 const root=document.documentElement,drawer=$("#drawer"),burger=$("#burger");
 function setDrawer(on){drawer.classList.toggle("on",on);burger.setAttribute("aria-expanded",on);root.classList.toggle("nav-open",on);if(on)$("[data-drawer-close]").focus()}
 burger.addEventListener("click",()=>setDrawer(true));
@@ -252,7 +252,7 @@ function admRegs(){
  const evs=DB.events.slice().sort((a,b)=>a.date.localeCompare(b.date)),el=$("#admtab");
  el.innerHTML=evs.length?evs.map(e=>{const rs=DB.regs.filter(r=>r.ev===e.id).sort((a,b)=>a.at.localeCompare(b.at)),n=rs.reduce((a,r)=>a+r.n,0);
   return `<div class="box"><div class="rowh"><div><h3>${esc(e.title)}</h3><small>${esc(cap(fmtDate(e.date)))} · ${n}/${e.cap} plaatsen</small></div><button class="ib" type="button" data-csv="${e.id}" ${rs.length?"":"disabled"}>CSV</button></div>
-  ${rs.length?`<div style="overflow-x:auto"><table class="t"><thead><tr><th>Naam</th><th>E-mail</th><th>Pers.</th><th>Opmerking</th><th>Datum</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr><td><b>${esc(r.name)}</b>${r.wait?' <span class="st">wachtlijst</span>':""}</td><td><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></td><td>${r.n}</td><td>${esc(r.note||"—")}</td><td>${new Date(r.at).toLocaleDateString("nl-BE")}</td><td><button class="ib" type="button" data-rdel="${r.id}" aria-label="Verwijder">×</button></td></tr>`).join("")}</tbody></table></div>`:`<p class="hint">Nog geen inschrijvingen.</p>`}</div>`}).join(""):`<p class="hint">Nog geen workshops.</p>`;
+  ${rs.length?`<div style="overflow-x:auto"><table class="t"><thead><tr><th>Naam</th><th>E-mail</th><th>Pers.</th><th>Opmerking</th><th>Datum</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr><td><b>${esc(r.name)}</b>${r.wait?' <span class="st">wachtlijst</span>':""}</td><td><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></td><td>${r.n}</td><td>${esc(r.note||"")}</td><td>${new Date(r.at).toLocaleDateString("nl-BE")}</td><td><button class="ib" type="button" data-rdel="${r.id}" aria-label="Verwijder">×</button></td></tr>`).join("")}</tbody></table></div>`:`<p class="hint">Nog geen inschrijvingen.</p>`}</div>`}).join(""):`<p class="hint">Nog geen workshops.</p>`;
  el.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;
   if(b.dataset.rdel){if(confirm("Inschrijving verwijderen?")){DB.regs=DB.regs.filter(r=>r.id!==b.dataset.rdel);save();renderAdmin()}return}
   if(b.dataset.csv){const e=DB.events.find(x=>x.id===b.dataset.csv);csv("inschrijvingen-"+e.title.toLowerCase().replace(/[^a-z0-9]+/g,"-")+".csv","Naam;E-mail;Personen;Opmerking;Ingeschreven;Wachtlijst",DB.regs.filter(r=>r.ev===e.id).map(r=>[r.name,r.email,r.n,r.note,r.at.slice(0,10),r.wait?"ja":"nee"]))}});
