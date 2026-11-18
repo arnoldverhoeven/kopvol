@@ -149,8 +149,44 @@ function updateAvail(){const iso=bf.date.value,t=bf.time.value,bi=bf.querySelect
  av.textContent=fb<=0&&fu<=0?"Dit uur is volzet. Kies een ander uur.":lab(fb,"Binnen")+" · "+lab(fu,"Terras");
  bi.disabled=fb<=0;bu.disabled=fu<=0;
  if(fb<=0&&fu>0)bu.checked=true;if(fu<=0&&fb>0)bi.checked=true}
-function refreshBooking(){bf.date.min=todayIso();fillPersons();fillTimes()}
+function refreshBooking(){bf.date.min=todayIso();fillPersons();fillTimes();dpSync()}
 bf.date.addEventListener("change",fillTimes);bf.time.addEventListener("change",updateAvail);
+
+/* ============ DATEPICKER IN THEMAKLEUR ============ */
+const MS=["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+const dpSrc=bf.date,dpBtn=$("#dpbtn"),dpTxt=$("#dptxt"),dpPop=$("#dpop"),CHEV='<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg>';
+let dpView=null,dpFocus=null;
+const dpMax=()=>{const d=new Date();d.setFullYear(d.getFullYear()+1);return isoOf(d)};
+const dpOk=iso=>iso>=todayIso()&&iso<=dpMax()&&!!hoursFor(iso);
+function dpSync(){const v=dpSrc.value;let t="Kies een datum";if(v){const d=dOf(v);t=DAYS[d.getDay()].slice(0,2)+" "+d.getDate()+" "+MS[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?" "+d.getFullYear():"")}dpTxt.textContent=t;dpTxt.classList.toggle("ph",!v)}
+function dpRender(){
+ const [y,m]=dpView,lead=(new Date(y,m,1).getDay()+6)%7,days=new Date(y,m+1,0).getDate(),t=todayIso(),sel=dpSrc.value,now=new Date(),minM=now.getFullYear()*12+now.getMonth(),cur=y*12+m;
+ let h=`<div class="dph"><button type="button" class="dpn pv" data-dp="prev" aria-label="Vorige maand" ${cur<=minM?"disabled":""}>${CHEV}</button><b aria-live="polite">${MON[m]} ${y}</b><button type="button" class="dpn" data-dp="next" aria-label="Volgende maand" ${cur>=minM+12?"disabled":""}>${CHEV}</button></div><div class="dpg">`;
+ h+=["ma","di","wo","do","vr","za","zo"].map(x=>`<span class="wd" aria-hidden="true">${x}</span>`).join("")+"<span></span>".repeat(lead);
+ for(let d=1;d<=days;d++){const iso=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0"),ok=dpOk(iso),future=iso>=t&&iso<=dpMax();
+  h+=`<button type="button" data-iso="${iso}" class="${iso===t?"td ":""}${future&&!ok?"cl":""}" tabindex="${iso===dpFocus?0:-1}" aria-label="${fmtDate(iso)}${future&&!ok?", gesloten":""}" ${ok?"":'aria-disabled="true"'} ${iso===sel?'aria-pressed="true"':""}>${d}</button>`}
+ dpPop.innerHTML=h+`</div><p class="dpk">Doorgestreepte dagen zijn gesloten.</p>`}
+function dpGo(iso,focus){const d=dOf(iso);dpFocus=iso;dpView=[d.getFullYear(),d.getMonth()];dpRender();if(focus){const b=dpPop.querySelector(`[data-iso="${iso}"]`);b&&b.focus()}}
+function dpOpen(){const sel=dpSrc.value,t=todayIso(),start=sel||(hoursFor(t)?t:nextOpenDay(t))||t;dpPop.hidden=false;dpBtn.setAttribute("aria-expanded","true");dpGo(start,true)}
+function dpClose(back){if(dpPop.hidden)return;dpPop.hidden=true;dpBtn.setAttribute("aria-expanded","false");if(back)dpBtn.focus()}
+function dpPick(iso){dpSrc.value=iso;dpSync();dpSrc.dispatchEvent(new Event("change",{bubbles:true}));dpClose(true)}
+dpBtn.addEventListener("click",()=>dpPop.hidden?dpOpen():dpClose(true));
+dpPop.addEventListener("click",e=>{const n=e.target.closest("[data-dp]"),b=e.target.closest("[data-iso]");
+ if(n){const [y,m]=dpView,k=n.dataset.dp==="next"?1:-1,d=new Date(y,m+k,1);dpView=[d.getFullYear(),d.getMonth()];dpFocus=isoOf(d);dpRender();(dpPop.querySelector(`[data-dp="${n.dataset.dp}"]:not([disabled])`)||dpPop.querySelector("[data-dp]:not([disabled])")).focus();return}
+ if(b&&b.getAttribute("aria-disabled")!=="true")dpPick(b.dataset.iso)});
+dpPop.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){e.preventDefault();dpClose(true);return}
+ const b=e.target.closest("[data-iso]");if(!b)return;
+ const d=dOf(b.dataset.iso),wd=(d.getDay()+6)%7,mv={ArrowLeft:-1,ArrowRight:1,ArrowUp:-7,ArrowDown:7,Home:-wd,End:6-wd}[e.key];
+ let to=null;
+ if(mv!==undefined){d.setDate(d.getDate()+mv);to=isoOf(d)}
+ else if(e.key==="PageUp"||e.key==="PageDown"){d.setMonth(d.getMonth()+(e.key==="PageDown"?1:-1));to=isoOf(d)}
+ else return;
+ e.preventDefault();
+ const lo=todayIso(),hi=dpMax();if(to<lo)to=lo;if(to>hi)to=hi;dpGo(to,true)});
+document.addEventListener("click",e=>{const path=e.composedPath();if(!dpPop.hidden&&!path.includes(dpPop)&&!path.includes(dpBtn))dpClose(false)});
+addEventListener("hashchange",()=>dpClose(false));
+dpSrc.addEventListener("change",dpSync);
 bf.addEventListener("submit",e=>{e.preventDefault();berr.textContent="";
  const o={name:bf.name.value.trim(),email:bf.email.value.trim(),phone:bf.phone.value.trim(),date:bf.date.value,time:bf.time.value,n:+bf.n.value,area:bf.area.value,note:bf.note.value.trim()};
  if(!o.date||!o.time){berr.textContent="Kies een datum en een uur.";return}

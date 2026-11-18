@@ -19,7 +19,7 @@
 <style>
 @font-face{font-family:"Gilroy";src:url("fonts/gilroy-medium.woff") format("woff");font-weight:500;font-style:normal;font-display:block}
 @font-face{font-family:"Gilroy";src:url("fonts/gilroy-bold.woff") format("woff");font-weight:700;font-style:normal;font-display:block}
-:root{--berry:#962222;--ivory:#F6F0DF;--line:rgba(150,34,34,.24);--f:"Gilroy",sans-serif;--hh:84px;--pad:24px;--r:22px;
+:root{--berry:#962222;--ivory:#F6F0DF;--field:#FCF9F1;--line:rgba(150,34,34,.24);--f:"Gilroy",sans-serif;--hh:84px;--pad:24px;--r:22px;
  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .23 0 0 0 0 .14 0 0 0 0 .13 .3 0 0 0 -.16'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -122,14 +122,15 @@ h2,.txt h1{font-size:clamp(26px,3.6vw,42px)}
 .btn.sm{min-height:40px;padding:10px 18px 9px;font-size:13px}
 .form{max-width:480px;margin:0 auto;padding:0 var(--pad);display:grid;gap:18px;text-align:left}
 .form label,.form legend{display:block;font-size:15px;font-weight:700;padding:0}
-.form input,.form select,.form textarea{display:block;width:100%;min-width:0;margin-top:6px;padding:12px 16px;min-height:50px;background:rgba(246,240,223,.5);border:1.5px solid var(--berry);border-radius:14px;font-weight:500;font-size:17px;appearance:none;-webkit-appearance:none}
+.form input,.form select,.form textarea{display:block;width:100%;min-width:0;margin-top:6px;padding:12px 16px;min-height:50px;background:var(--field);border:1.5px solid var(--berry);border-radius:14px;font-weight:500;font-size:17px;appearance:none;-webkit-appearance:none}
+.form option{background:var(--field);color:var(--berry)}
 .form select{background-image:linear-gradient(45deg,transparent 50%,var(--berry) 50%),linear-gradient(135deg,var(--berry) 50%,transparent 50%);background-position:calc(100% - 22px) 22px,calc(100% - 16px) 22px;background-size:6px 6px;background-repeat:no-repeat;padding-right:38px}
 .form input:disabled,.form select:disabled{opacity:.45}
 .form textarea{min-height:88px;resize:vertical}
 .form ::placeholder{color:var(--berry);opacity:.5}
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
 fieldset{border:0;margin:0;padding:0;min-width:0}
-.seg{display:grid;grid-template-columns:1fr 1fr;margin-top:6px;border:1.5px solid var(--berry);border-radius:999px;padding:4px}
+.seg{display:grid;grid-template-columns:1fr 1fr;margin-top:6px;border:1.5px solid var(--berry);border-radius:999px;padding:4px;background:var(--field)}
 .seg label{position:relative;font-weight:500;font-size:17px}
 .seg input{position:absolute;opacity:0;inset:0;margin:0;min-height:0;cursor:pointer}
 .seg span{display:grid;place-items:center;min-height:40px;border-radius:999px;transition:background .2s,color .2s}
@@ -160,6 +161,38 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .lines a:not(.btn){display:block;text-decoration:none;padding:3px 0}
 .lines a:not(.btn):hover{text-decoration:underline}
 .lines .btn{margin:16px 0 26px}
+.ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cis{display:grid;justify-content:center;margin-top:6px}
+.lines a.ci{display:flex;align-items:center;gap:14px;padding:6px 0}
+.ico{display:grid;place-items:center;width:38px;height:38px;flex:none;border:1.5px solid var(--berry);border-radius:50%;transition:background .2s,color .2s}
+.lines a.ci:hover .ico{background:var(--berry);color:var(--ivory)}
+footer .fig{display:flex;align-items:center;justify-content:center;gap:10px}
+.dpw{position:relative;min-width:0}
+.dl{display:block;font-size:15px;font-weight:700}
+.dpsrc{position:absolute;left:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none;margin:0!important;padding:0!important;min-height:0!important;border:0!important}
+.dpbtn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-width:0;margin-top:6px;padding:12px 16px;min-height:50px;background:var(--field);border:1.5px solid var(--berry);border-radius:14px;font-weight:500;font-size:17px;text-align:left;cursor:pointer;color:inherit}
+.dpbtn span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dpbtn .ph{opacity:.5}
+.dpbtn .ic{width:20px;height:20px}
+.dpbtn[aria-expanded=true]{box-shadow:0 0 0 3px rgba(150,34,34,.16)}
+.dpop{position:absolute;z-index:30;top:calc(100% + 8px);left:0;width:min(330px,calc(100vw - 2*var(--pad)));padding:16px;background:var(--field);border:1.5px solid var(--berry);border-radius:20px;box-shadow:0 24px 48px -20px rgba(150,34,34,.5)}
+.dpop[hidden]{display:none}
+.dph{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dph b{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+.dpn{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1.5px solid var(--berry);border-radius:50%;background:transparent;color:var(--berry);cursor:pointer;transition:background .2s,color .2s}
+.dpn:hover:not(:disabled){background:var(--berry);color:var(--ivory)}
+.dpn:disabled{opacity:.3;cursor:default}
+.dpn.pv .ic{transform:rotate(180deg)}
+.dpg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;text-align:center}
+.dpg .wd{padding:2px 0 6px;font-size:12px;font-weight:700;text-transform:uppercase;opacity:.6}
+.dpg button{display:grid;place-items:center;aspect-ratio:1;padding:0;border:0;border-radius:50%;background:transparent;color:inherit;font-size:16px;font-weight:500;cursor:pointer}
+.dpg button:hover:not([aria-disabled=true]){background:rgba(150,34,34,.12)}
+.dpg button.td{box-shadow:inset 0 0 0 1.5px var(--berry)}
+.dpg button[aria-pressed=true]{background:var(--berry);color:var(--ivory);font-weight:700}
+.dpg button[aria-disabled=true]{opacity:.3;cursor:default}
+.dpg button.cl{text-decoration:line-through}
+.dpg button:focus-visible,.dpn:focus-visible,.dpbtn:focus-visible{outline:2px solid var(--berry);outline-offset:2px}
+.dpk{margin-top:10px;font-size:13px;opacity:.75;text-align:center}
 
 /* ---- footer ---- */
 footer{position:relative;overflow:hidden;background:var(--berry) var(--grain);color:var(--ivory);padding:clamp(64px,8vw,96px) var(--pad) 28px;margin-top:clamp(80px,11vw,144px)}
@@ -284,7 +317,7 @@ table.t small{font-size:13px}
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="sw" viewBox="59 -21.5 480 480"><path d="M 290.23 263.75 C 298.02 254.33 280.64 255.96 276.61 255.15 C 253.56 250.54 256.99 213.55 277.83 204.73 C 304.82 193.32 341.17 218.03 345 246.43 C 353.64 310.56 279.16 345.99 225.97 316.96 C 149.78 275.38 184.14 157.29 254.99 127.21 C 357.51 83.68 472.48 193.81 458.22 298.09 C 436.99 453.42 204.48 462.77 114.73 361.07 C 2 233.34 108.44 19.94 271.38 9.38 C 385.36 2 543.91 99.08 529.28 227.47 C 526.84 248.86 502.71 243.18 491.32 231.86 C 479.28 219.88 480.88 207.78 477.95 193.03 C 462.52 115.15 346.94 57.14 272.62 62.83 C 124.38 74.17 54.04 296.22 207.75 362.52 C 270.43 389.55 367.68 381.48 398.13 311.33 C 433.8 229.13 324.31 130.49 257.73 188.36 C 236.26 207.02 223.78 252.36 251.68 270.14 C 262.66 277.14 282.18 273.52 290.23 263.75"/></symbol></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="sw" viewBox="59 -21.5 480 480"><path d="M 290.23 263.75 C 298.02 254.33 280.64 255.96 276.61 255.15 C 253.56 250.54 256.99 213.55 277.83 204.73 C 304.82 193.32 341.17 218.03 345 246.43 C 353.64 310.56 279.16 345.99 225.97 316.96 C 149.78 275.38 184.14 157.29 254.99 127.21 C 357.51 83.68 472.48 193.81 458.22 298.09 C 436.99 453.42 204.48 462.77 114.73 361.07 C 2 233.34 108.44 19.94 271.38 9.38 C 385.36 2 543.91 99.08 529.28 227.47 C 526.84 248.86 502.71 243.18 491.32 231.86 C 479.28 219.88 480.88 207.78 477.95 193.03 C 462.52 115.15 346.94 57.14 272.62 62.83 C 124.38 74.17 54.04 296.22 207.75 362.52 C 270.43 389.55 367.68 381.48 398.13 311.33 C 433.8 229.13 324.31 130.49 257.73 188.36 C 236.26 207.02 223.78 252.36 251.68 270.14 C 262.66 277.14 282.18 273.52 290.23 263.75"/></symbol><symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol><symbol id="i-ig" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></symbol><symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol><symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol></svg>
 <a class="skip" href="#main">Naar de inhoud</a>
 
 <header class="top">
@@ -334,9 +367,9 @@ table.t small{font-size:13px}
  <div class="txt rv"><h2>Wat begint in een kop,<br>eindigt zelden daar.</h2></div>
  <div class="gap s"></div>
  <div class="trio">
-  <figure class="pic rv"><img src="img/bekers.jpg" alt="Twee witte meeneembekers met het KOPVOL-logo" width="1000" height="1250"></figure>
-  <figure class="pic rv"><img src="img/machine.jpg" alt="Handgemaakte, gespikkelde kopjes op het rooster van de espressomachine" width="1000" height="1250"></figure>
-  <figure class="pic rv"><img src="img/iced.jpg" alt="Iced drinks met de swirl van KOPVOL op het deksel" width="1000" height="1250"></figure>
+  <figure class="pic rv"><img src="img/kopjes.jpg" alt="Twee rode KOPVOL-bekers op elkaar, voor het terras van de koffiebar" width="632" height="855" loading="lazy" style="object-position:50% 42%"></figure>
+  <figure class="pic rv"><img src="img/omgekeerd.jpg" alt="Omgekeerde rode KOPVOL-bekers rond één gevulde beker met een hartje in het melkschuim" width="633" height="855" loading="lazy"></figure>
+  <figure class="pic rv"><img src="img/togo.jpg" alt="To-go dienblad met twee koffies, een croissant en de KOPVOL-stempelkaart" width="637" height="855" loading="lazy"></figure>
  </div>
  <div class="gap s"></div>
  <div class="txt rv">
@@ -384,7 +417,11 @@ table.t small{font-size:13px}
  <div class="phead"><p class="kick"><svg class="sw"><use href="#sw"/></svg>Reserveren</p><h1>A place to land<br>(and go again).</h1><p class="sub">Met <span id="minp">6</span> of meer? Reserveer je tafel, binnen of op het terras. Met minder loop je gewoon binnen.</p></div>
  <form class="form" id="bform" novalidate>
   <div class="two">
-   <label>Datum<input type="date" name="date" required></label>
+   <div class="dpw"><span class="dl" id="dpl">Datum</span>
+    <input type="date" name="date" class="dpsrc" tabindex="-1" aria-hidden="true">
+    <button type="button" class="dpbtn" id="dpbtn" aria-haspopup="dialog" aria-expanded="false" aria-labelledby="dpl dptxt"><span id="dptxt" class="ph">Kies een datum</span><svg class="ic" aria-hidden="true"><use href="#i-cal"/></svg></button>
+    <div class="dpop" id="dpop" role="dialog" aria-label="Kies een datum" hidden></div>
+   </div>
    <label>Uur<select name="time" required disabled><option value="">Kies eerst een datum</option></select></label>
   </div>
   <label>Aantal personen<select name="n"></select></label>
@@ -419,8 +456,11 @@ table.t small{font-size:13px}
    <h2>Adres</h2>
    <p>Troyentenhoflaan 42<br>2600 Berchem</p>
    <a class="btn o" href="https://www.google.com/maps/search/?api=1&amp;query=KOPVOL+Troyentenhoflaan+42+Antwerpen" target="_blank" rel="noopener">Route</a>
-   <a href="tel:+32483671312">0483 67 13 12</a>
-   <a href="mailto:info@kopvolkoffiebar.be">info@kopvolkoffiebar.be</a>
+   <div class="cis">
+   <a class="ci" href="tel:+32483671312"><span class="ico"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg></span>0483 67 13 12</a>
+   <a class="ci" href="mailto:info@kopvolkoffiebar.be"><span class="ico"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></span>info@kopvolkoffiebar.be</a>
+   <a class="ci" href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener"><span class="ico"><svg class="ic" aria-hidden="true"><use href="#i-ig"/></svg></span>@kopvol.koffiebar</a>
+   </div>
   </div>
  </div>
 </section>
@@ -433,7 +473,7 @@ table.t small{font-size:13px}
  <p class="say">Kopvol, hartje voller.</p>
  <p class="dup"><a href="#/bezoek">Troyentenhoflaan 42, 2600 Berchem</a></p>
  <p class="dup" id="fhours"></p>
- <p>Brewed memories: <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener">@kopvol.koffiebar</a></p>
+ <p class="fig"><svg class="ic" aria-hidden="true"><use href="#i-ig"/></svg><span>Brewed memories: <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener">@kopvol.koffiebar</a></span></p>
  <p class="fine">© 2026 KOPVOL · <button type="button" data-admin>Beheer</button> · Website: <a href="https://www.agv-it.be" target="_blank" rel="noopener">AGV IT Consulting</a></p>
 </footer>
 
