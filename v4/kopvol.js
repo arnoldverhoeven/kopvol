@@ -16,15 +16,15 @@ const SW=(c="")=>`<svg class="sw ${c}" aria-hidden="true"><use href="#sw"/></svg
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("on"),2400)}
 
 /* ============ DATA (demo) ============ */
-const PH={cups:"img/cups.jpg",porta:"img/porta.jpg",boxes:"img/boxes.jpg"};
+const PH={draai:"img/draai.jpg",latte:"img/latte.jpg",coupe:"img/coupe.jpg"};
 const imgOf=e=>e.img?(PH[e.img]||e.img):"";
 /* standaard de Google-openingsuren; de eigenaars passen ze aan in het beheer */
 const DEFAULT_SETTINGS={hours:{0:[9,16],1:[9,16],2:null,3:[9,16],4:[9,16],5:[9,16],6:[9,16]},closed:[{id:"c1",from:"2026-12-24",to:"2027-01-02",reason:"Kerstvakantie"}],tables:{binnen:4,buiten:4},dur:2,minP:6,maxP:14};
 function nextIso(days,wd){const d=new Date();d.setDate(d.getDate()+days);if(wd!=null)while(d.getDay()!==wd)d.setDate(d.getDate()+1);else while(d.getDay()===2)d.setDate(d.getDate()+1);return isoOf(d)}
 const SEED_EVENTS=[
- {id:"e1",img:"cups",title:"Draai je eigen kopje",date:nextIso(9,6),time:"10u – 13u",price:65,cap:8,pub:true,desc:"Ilona neemt je mee achter de draaitafel. Je draait twee kopjes, kiest je glazuur en haalt ze drie weken later gebakken op in de bar. Geen ervaring nodig."},
- {id:"e2",img:"porta",title:"Latte art voor beginners",date:nextIso(20,0),time:"16u30 – 18u",price:35,cap:6,pub:true,desc:"Robin leert je melk stomen en een hartje gieten. Veel oefenen, en je drinkt je eigen werk op."},
- {id:"e3",img:"boxes",title:"Coupevol: cava na de uren",date:nextIso(30,5),time:"18u – 22u",price:25,cap:24,pub:true,desc:"Na vieren ruilen we de koffie voor bubbels. Muziek op de achtergrond en de buurt aan tafel. Je eerste glas zit in je inschrijving."}
+ {id:"e1",img:"draai",title:"Draai je eigen kopje",date:"2026-11-28",time:"10u – 13u",price:65,cap:8,pub:true,desc:"Ilona neemt je mee achter de draaitafel. Je draait twee kopjes, kiest je glazuur en haalt ze drie weken later gebakken op in de bar. Geen ervaring nodig."},
+ {id:"e2",img:"latte",title:"Latte art voor beginners",date:"2026-12-13",time:"16u30 – 18u",price:35,cap:6,pub:true,desc:"Robin leert je melk stomen en een hartje gieten. Veel oefenen, en je drinkt je eigen werk op."},
+ {id:"e3",img:"coupe",title:"Coupevol: cava na de uren",date:"2026-12-18",time:"18u – 22u",price:25,cap:24,pub:true,desc:"Na vieren ruilen we de koffie voor bubbels. Muziek op de achtergrond en de buurt aan tafel. Je eerste glas zit in je inschrijving."}
 ];
 const SEED_REGS=[
  {id:"r1",ev:"e1",name:"Sofie Van den Broeck",email:"sofie.vdb@example.be",n:2,note:"",at:"2026-11-04T19:22:00"},
@@ -38,7 +38,7 @@ const SEED_BOOKINGS=[
  {id:"b2",name:"Team Studio Noor",email:"hallo@example.be",phone:"0486 65 43 21",date:nextIso(3),time:"12:00",n:6,area:"buiten",note:"",status:"nieuw",at:"2026-11-14T17:40:00"},
  {id:"b3",name:"Els Vermeulen",email:"els.v@example.be",phone:"0495 11 22 33",date:nextIso(6),time:"09:30",n:7,area:"binnen",note:"Ontbijt met collega's",status:"bevestigd",at:"2026-11-15T08:03:00"}
 ];
-const KEY="kopvol_v6";
+const KEY="kopvol_v7";
 let DB=load();
 function fresh(){return {events:structuredClone(SEED_EVENTS),regs:structuredClone(SEED_REGS),bookings:structuredClone(SEED_BOOKINGS),settings:structuredClone(DEFAULT_SETTINGS)}}
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.events&&d.settings&&d.bookings)return d}catch(e){}return fresh()}
@@ -107,7 +107,7 @@ const spots=left=>left<=0?"volzet":left===1?"nog 1 plaats":"nog "+left+" plaatse
 function renderEvents(){
  const list=upcoming();
  $("#evlist").innerHTML=list.length?list.map(e=>{const left=e.cap-taken(e.id);
-  return `<article class="ev rv">${imgOf(e)?`<figure class="pic"><img src="${imgOf(e)}" alt="" loading="lazy"></figure>`:""}<p class="when">${esc(fmtDate(e.date))} · ${esc(e.time)}</p><h2>${esc(e.title)}</h2><p>${esc(e.desc)}</p><p class="meta">${eur(e.price)} per persoon · ${spots(left)}</p><button class="btn o" type="button" data-signup="${e.id}">${left<=0?"Wachtlijst":"Inschrijven"}</button></article>`}).join("")
+  return `<article class="ev rv"><h2>${esc(e.title)}</h2><p class="when">${esc(fmtDate(e.date))} · ${esc(e.time)}</p>${imgOf(e)?`<figure class="pic"><img src="${imgOf(e)}" alt="" loading="lazy"></figure>`:""}<div class="evb"><p>${esc(e.desc)}</p><p class="meta">${eur(e.price)} per persoon · ${spots(left)}</p><button class="btn o" type="button" data-signup="${e.id}">${left<=0?"Wachtlijst":"Inschrijven"}</button></div></article>`}).join(`<div class="evsep" aria-hidden="true">${SW("spin")}</div>`)
   :`<p class="empty">Nog even aan het fijnmalen. Nieuwe data verschijnen hier en op <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener">@kopvol.koffiebar</a>.</p>`;
  watchReveal();
 }

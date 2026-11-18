@@ -39,9 +39,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .nav{display:flex;gap:10px}
 .nav.l{justify-self:end}.nav.r{justify-self:start}
 .nav a{font-weight:700;font-size:14px;line-height:1;text-transform:uppercase;text-decoration:none;padding:12px 20px 11px;border:1.5px solid var(--berry);border-radius:999px;transition:background .25s,color .25s}
-.nav a:hover,.nav a.cta{background:var(--berry);color:var(--ivory)}
-.nav a[aria-current]:not(.cta){background:rgba(150,34,34,.13);color:var(--berry)}
-.nav a.cta:hover{background:transparent;color:var(--berry)}
+.nav a:hover{background:var(--berry);color:var(--ivory)}
+.nav a[aria-current]{background:rgba(150,34,34,.13);color:var(--berry)}
 .brand{display:grid;place-items:center;width:156px;height:44px;text-decoration:none}
 .brand img{width:156px}
 
@@ -106,12 +105,15 @@ h2,.txt h1{font-size:clamp(26px,3.6vw,42px)}
 .food .sub{font-weight:700;text-transform:uppercase;font-size:14px;margin:-8px 0 16px}
 
 /* ---- workshops ---- */
-.evs{max-width:calc(600px + 2*var(--pad));margin:0 auto;padding:0 var(--pad)}
-.ev{padding-bottom:clamp(64px,8vw,96px)}
-.ev .pic{aspect-ratio:3/2;margin-bottom:30px}
-.ev .when{font-weight:700;text-transform:uppercase;font-size:15px}
-.ev h2{font-size:clamp(26px,3.2vw,34px);margin:10px 0 14px}
-.ev .meta{margin:16px 0 22px}
+.evs{max-width:calc(780px + 2*var(--pad));margin:0 auto;padding:0 var(--pad);text-align:center}
+.ev h2{font-size:clamp(26px,3.4vw,38px);margin:0 0 10px}
+.ev .when{font-weight:700;text-transform:uppercase;font-size:15px;margin-bottom:26px}
+.ev .pic{aspect-ratio:3/2}
+.evb{max-width:560px;margin:28px auto 0}
+.ev .meta{font-weight:700;margin:16px 0 22px}
+.evsep{display:grid;place-items:center;padding:clamp(52px,7vw,92px) 0}
+.evsep .sw{width:60px;height:60px}
+.ev:last-child{padding-bottom:clamp(56px,7vw,88px)}
 .empty{padding:40px 0;border-top:1.5px solid var(--line);border-bottom:1.5px solid var(--line)}
 
 /* ---- knoppen & formulieren ---- */
@@ -321,9 +323,9 @@ table.t small{font-size:13px}
 <a class="skip" href="#main">Naar de inhoud</a>
 
 <header class="top">
- <nav class="nav l" aria-label="Navigatie links"><a href="#/menu" data-nav="menu">Menu</a><a href="#/workshops" data-nav="workshops">Workshops</a></nav>
+ <nav class="nav l" aria-label="Navigatie links"><a href="#/menu" data-nav="menu">Menu</a><a href="#/reserveren" data-nav="reserveren">Reserveren</a></nav>
  <a class="brand" href="#/" aria-label="KOPVOL, naar de startpagina"><img src="img/logo-berry.png" alt="" width="1400" height="270"></a>
- <nav class="nav r" aria-label="Navigatie rechts"><a href="#/bezoek" data-nav="bezoek">Bezoek</a><a class="cta" href="#/reserveren" data-nav="reserveren">Reserveren</a></nav>
+ <nav class="nav r" aria-label="Navigatie rechts"><a href="#/workshops" data-nav="workshops">Workshops</a><a href="#/bezoek" data-nav="bezoek">Bezoek</a></nav>
  <button class="rb burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Navigatie openen"><span><i></i><i></i></span></button>
 </header>
 
@@ -331,8 +333,8 @@ table.t small{font-size:13px}
  <button class="rb inv xx x" type="button" data-drawer-close aria-label="Navigatie sluiten"><i></i><i></i></button>
  <a href="#/" data-nav="home">Verhaal</a>
  <a href="#/menu" data-nav="menu">Menu</a>
- <a href="#/workshops" data-nav="workshops">Workshops</a>
  <a href="#/reserveren" data-nav="reserveren">Reserveren</a>
+ <a href="#/workshops" data-nav="workshops">Workshops</a>
  <a href="#/bezoek" data-nav="bezoek">Bezoek</a>
  <svg class="sw spin"><use href="#sw"/></svg>
 </div>
