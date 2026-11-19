@@ -169,6 +169,11 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .call .btn{display:inline-flex;align-items:center;gap:12px}
 .call .btn .ic{width:20px;height:20px}
 .call .ons{margin-top:24px}
+/* online reserveren aan (standaard): formulier + klein belalternatief; uit: enkel de belknop. De schakelaar zit in het beheer (html[data-rv]). */
+html:not([data-rv=off]) .ph-only{display:none}
+html[data-rv=off] #bform,html[data-rv=off] .ph-alt{display:none}
+.ph-alt{text-align:center;margin:30px auto 0;padding:0 var(--pad);font-size:17px}
+.ph-alt a{font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
 /* ---- contact ---- */
 .visit{max-width:calc(1120px + 2*var(--pad));margin:0 auto;padding:clamp(36px,5vw,72px) var(--pad) 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"head head" "hours info" "map map";gap:clamp(36px,4.5vw,60px) 64px;align-items:start}
@@ -309,6 +314,13 @@ table.t small{font-size:13px}
 .ib:disabled{opacity:.4;cursor:default}
 .rowh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
 .rowh h3{margin:0}
+.swt{display:inline-flex;align-items:center;gap:12px;min-height:44px;padding:4px 6px 4px 16px;background:transparent;border:1.5px solid var(--berry);border-radius:999px;font-weight:700;font-size:13px;text-transform:uppercase;cursor:pointer}
+.swt i{position:relative;width:46px;height:28px;border:1.5px solid var(--berry);border-radius:999px;transition:background .2s}
+.swt i::after{content:"";position:absolute;top:4px;left:4px;width:16px;height:16px;border-radius:50%;background:var(--berry);transition:transform .2s,background .2s}
+.swt[aria-checked=true] i{background:var(--berry)}
+.swt[aria-checked=true] i::after{transform:translateX(18px);background:var(--ivory)}
+.swt:focus-visible{outline:2px solid var(--berry);outline-offset:3px}
+.rvbox .hint{margin:6px 0 0;max-width:560px}
 .ohrow{display:grid;grid-template-columns:130px 1fr auto 1fr;gap:10px;align-items:center}
 .ohrow input[type=time]{margin:0}
 .chk{display:flex!important;align-items:center;gap:8px;font-weight:500!important}

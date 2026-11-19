@@ -1,7 +1,6 @@
 /* KOPVOL, website-concept v4 (sober). Demo: data in localStorage; in productie Supabase. */
 const MPA=true;
-/* Online reserveren staat voorlopig uit: reserveren gaat telefonisch. Zet RESERVE_ONLINE op true in build.py om het formulier en de reservaties in het beheer terug te activeren. */
-const RESERVE_ONLINE=false;
+/* Online reserveren is een instelling in het beheer (DB.settings.reserveOnline, standaard aan). Uit = de pagina Reserveren toont enkel de belknop. */
 /* Elke pagina heeft een eigen URL en bevat enkel haar eigen deel. Opzoekingen naar elementen van andere pagina's doen stilletjes niets. */
 const NIL=new Proxy(function(){},{get:(t,k)=>k===Symbol.toPrimitive?()=>"":(k==="value"||k==="textContent"||k==="innerHTML")?"":k==="length"?0:NIL,set:()=>true,apply:()=>NIL,construct:()=>NIL});
 const $=(s,r=document)=>r.querySelector(s)||NIL,$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -24,7 +23,7 @@ function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clea
 const PH={draai:"/v4/img/draai.jpg",latte:"/v4/img/latte.jpg",coupe:"/v4/img/coupe.jpg",iced:"/v4/img/iced.jpg",bekers:"/v4/img/bekers.jpg",popup:"/v4/img/popup.jpg"};
 const imgOf=e=>e.img?(PH[e.img]||e.img):"";
 /* standaard de Google-openingsuren; de eigenaars passen ze aan in het beheer */
-const DEFAULT_SETTINGS={hours:{0:[9,16],1:[8,16],2:null,3:[8,16],4:[8,16],5:[8,16],6:[9,16]},closed:[{id:"c1",from:"2026-12-24",to:"2027-01-02",reason:"Kerstvakantie"}],tables:{binnen:4,buiten:4},dur:2,minP:6,maxP:14};
+const DEFAULT_SETTINGS={hours:{0:[9,16],1:[8,16],2:null,3:[8,16],4:[8,16],5:[8,16],6:[9,16]},closed:[{id:"c1",from:"2026-12-24",to:"2027-01-02",reason:"Kerstvakantie"}],tables:{binnen:4,buiten:4},dur:2,minP:6,maxP:14,reserveOnline:true};
 function nextIso(days,wd){const d=new Date();d.setDate(d.getDate()+days);if(wd!=null)while(d.getDay()!==wd)d.setDate(d.getDate()+1);else while(d.getDay()===2)d.setDate(d.getDate()+1);return isoOf(d)}
 const SEED_EVENTS=[
  {id:"e1",type:"workshop",img:"draai",title:"Draai je eigen kopje",date:"2026-11-28",time:"10u – 13u",price:65,cap:8,pub:true,desc:"Ilona neemt je mee achter de draaitafel. Je draait twee kopjes, kiest je glazuur en haalt ze drie weken later gebakken op in de bar. Geen ervaring nodig."},
@@ -52,11 +51,14 @@ function fresh(){return {events:structuredClone(SEED_EVENTS),regs:structuredClon
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.events&&d.settings&&d.bookings){if(!d.popup)d.popup=structuredClone(DEFAULT_POPUP);return d}}catch(e){}return fresh()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
 const S=()=>DB.settings;
+const online=()=>S().reserveOnline!==false; /* ontbreekt de instelling (oudere demo-data), dan staat online reserveren aan */
 
 /* ============ NAVIGATIE ============ */
 const PAGES={home:"KOPVOL | Koffiebar in Berchem",menu:"Menu | KOPVOL",reserveren:"Reserveren | KOPVOL",workshops:"Workshops | KOPVOL",events:"Events | KOPVOL",contact:"Contact | KOPVOL"};
 const ALIAS={bezoek:"contact"}; /* oude links naar /bezoek blijven werken */
 const root=document.documentElement,drawer=$("#drawer"),burger=$("#burger");
+const applyReserve=()=>{root.dataset.rv=online()?"on":"off"}; /* CSS toont formulier (on) of enkel de belknop (off) */
+applyReserve();
 function setDrawer(on){drawer.classList.toggle("on",on);burger.setAttribute("aria-expanded",on);root.classList.toggle("nav-open",on);if(on)$("[data-drawer-close]").focus()}
 burger.addEventListener("click",()=>setDrawer(true));
 drawer.addEventListener("click",e=>{if(e.target.closest("a,[data-drawer-close]"))setDrawer(false)});
@@ -158,7 +160,7 @@ function freeTables(iso,time,area){return S().tables[area]-DB.bookings.filter(b=
 const bf=$("#bform"),av=$("#avail"),berr=$("#berr");
 function fillPersons(){const s=S(),n=bf.n,cur=n.value;n.innerHTML="";for(let i=s.minP;i<=s.maxP;i++)n.add(new Option(i+" personen",i));if(cur&&+cur>=s.minP&&+cur<=s.maxP)n.value=cur;$("#minp").textContent=s.minP}
 function fillTimes(){const iso=bf.date.value,time=bf.time,c=iso&&closureFor(iso),sl=iso?slotsFor(iso):[];time.innerHTML="";
- if(!iso){time.add(new Option("Kies eerst een datum",""));time.disabled=true}
+ if(!iso){time.add(new Option("Eerst een datum",""));time.disabled=true}
  else if(!sl.length){time.add(new Option(c?"Gesloten: "+c.reason:"Gesloten op deze dag",""));time.disabled=true}
  else{time.disabled=false;sl.forEach(s=>time.add(new Option(uur(hOf(s)),s)))}
  updateAvail()}
@@ -216,7 +218,7 @@ bf.addEventListener("submit",e=>{e.preventDefault();berr.textContent="";
  bf.reset();refreshBooking()});
 
 /* ============ BEHEER (mini-CMS) ============ */
-const PIN="2600";let admAuth=false,admTab=RESERVE_ONLINE?"bookings":"workshop",editId=null;
+const PIN="2600";let admAuth=false,admTab="bookings",editId=null;
 const adm=$("#adm"),ab=$("#admbody");
 function openAdmin(){adm.hidden=false;root.classList.add("adm-open");renderAdmin();adm.scrollTop=0}
 function closeAdmin(){adm.hidden=true;root.classList.remove("adm-open");renderAll()}
@@ -225,7 +227,7 @@ function renderAdmin(){
   $("#pinform").addEventListener("submit",e=>{e.preventDefault();if(e.target.pin.value===PIN){admAuth=true;renderAdmin()}else $("#perr").textContent="Foute pincode."});$("#pinform").pin.focus();return}
  const newB=DB.bookings.filter(x=>x.status==="nieuw").length;
  const tab=(k,l)=>`<button type="button" data-at="${k}" aria-current="${admTab===k}">${l}</button>`;
- ab.innerHTML=`<div class="tabs">${RESERVE_ONLINE?tab("bookings","Reservaties"+(newB?" ("+newB+" nieuw)":"")):""}${tab("workshop","Workshops")}${tab("event","Events")}${tab("regs","Inschrijvingen ("+DB.regs.length+")")}${tab("popup","Pop-up")}${tab("settings",RESERVE_ONLINE?"Openingsuren &amp; tafels":"Openingsuren")}</div><div id="admtab"></div>`;
+ ab.innerHTML=`<div class="tabs">${tab("bookings","Reservaties"+(newB?" ("+newB+" nieuw)":""))}${tab("workshop","Workshops")}${tab("event","Events")}${tab("regs","Inschrijvingen ("+DB.regs.length+")")}${tab("popup","Pop-up")}${tab("settings","Openingsuren &amp; tafels")}</div><div id="admtab"></div>`;
  $$("[data-at]",ab).forEach(x=>x.addEventListener("click",()=>{admTab=x.dataset.at;editId=null;renderAdmin()}));
  if(admTab==="workshop"||admTab==="event")admEvents(admTab);else ({bookings:admBookings,settings:admSettings,regs:admRegs,popup:admPopup})[admTab]();
 }
@@ -235,8 +237,10 @@ function admBookings(){
  const row=x=>`<tr class="${x.status}"><td><b>${esc(cap(fmtDate(x.date)))}</b><br><small>${esc(x.time)} · ${x.area==="binnen"?"binnen":"terras"}</small></td><td><b>${esc(x.name)}</b><br><small>${x.n} pers.${x.note?" · "+esc(x.note):""}</small></td><td><a href="tel:${esc(x.phone)}">${esc(x.phone)}</a><br><a href="mailto:${esc(x.email)}">${esc(x.email)}</a></td><td><span class="st ${x.status}">${x.status}</span></td><td><div class="acts">${x.status==="nieuw"?`<button class="ib" type="button" data-bok="${x.id}">Bevestig</button>`:""}${x.status!=="geannuleerd"?`<button class="ib" type="button" data-bcancel="${x.id}">Annuleer</button>`:""}<button class="ib" type="button" data-bdel="${x.id}" aria-label="Verwijder">×</button></div></td></tr>`;
  const table=rs=>rs.length?`<div style="overflow-x:auto"><table class="t"><thead><tr><th>Wanneer</th><th>Wie</th><th>Contact</th><th>Status</th><th></th></tr></thead><tbody>${rs.map(row).join("")}</tbody></table></div>`:`<p class="hint">Geen reservaties.</p>`;
  const el=$("#admtab");
- el.innerHTML=`<div class="box"><div class="rowh"><h3>Komende reservaties</h3><button class="ib" type="button" data-bcsv ${up.length?"":"disabled"}>CSV</button></div><p class="hint">Per tijdslot maximaal ${S().tables.binnen} tafels binnen en ${S().tables.buiten} op het terras. Aanpasbaar bij Openingsuren &amp; tafels.</p>${table(up)}</div><div class="box"><h3>Voorbije reservaties</h3>${table(past)}</div>`;
+ const on=online();
+ el.innerHTML=`<div class="box rvbox"><div class="rowh"><div><h3>Online reserveren</h3><p class="hint">${on?"Bezoekers kunnen op de pagina Reserveren zelf een tafel aanvragen. Zet het uit om enkel de belknop (0483 67 13 12) te tonen.":"Uitgeschakeld: de pagina Reserveren toont enkel de belknop 0483 67 13 12. Bestaande reservaties blijven hier staan."}</p></div><button class="swt" type="button" role="switch" aria-checked="${on}" data-rvtoggle><span>${on?"Aan":"Uit"}</span><i aria-hidden="true"></i></button></div></div><div class="box"><div class="rowh"><h3>Komende reservaties</h3><button class="ib" type="button" data-bcsv ${up.length?"":"disabled"}>CSV</button></div><p class="hint">Per tijdslot maximaal ${S().tables.binnen} tafels binnen en ${S().tables.buiten} op het terras. Aanpasbaar bij Openingsuren &amp; tafels.</p>${table(up)}</div><div class="box"><h3>Voorbije reservaties</h3>${table(past)}</div>`;
  el.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;const find=id=>DB.bookings.find(x=>x.id===id);
+  if(b.hasAttribute("data-rvtoggle")){DB.settings.reserveOnline=!online();save();applyReserve();renderAdmin();toast(online()?"Online reserveren staat aan":"Online reserveren staat uit: bezoekers zien de belknop");return}
   if(b.dataset.bok){find(b.dataset.bok).status="bevestigd";save();renderAdmin();toast("Reservatie bevestigd");return}
   if(b.dataset.bcancel){if(confirm("Reservatie annuleren?")){find(b.dataset.bcancel).status="geannuleerd";save();renderAdmin()}return}
   if(b.dataset.bdel){if(confirm("Reservatie definitief verwijderen?")){DB.bookings=DB.bookings.filter(x=>x.id!==b.dataset.bdel);save();renderAdmin()}return}
@@ -248,14 +252,14 @@ function admSettings(){
  <div class="box"><h3>Openingsuren</h3><p class="hint">Vink een dag uit voor een vaste rustdag.</p>
   <form class="form" id="hform">
   ${[1,2,3,4,5,6,0].map(d=>`<div class="ohrow"><label class="chk"><input type="checkbox" name="o${d}" ${s.hours[d]?"checked":""}>${cap(DAYS[d])}</label><input type="time" name="f${d}" aria-label="${cap(DAYS[d])} open vanaf" value="${s.hours[d]?hhmm(s.hours[d][0]):"09:00"}" step="1800" ${s.hours[d]?"":"disabled"}><span>tot</span><input type="time" name="t${d}" aria-label="${cap(DAYS[d])} open tot" value="${s.hours[d]?hhmm(s.hours[d][1]):"16:00"}" step="1800" ${s.hours[d]?"":"disabled"}></div>`).join("")}
-  ${RESERVE_ONLINE?`<h3 style="margin:14px 0 0">Tafels &amp; reservaties</h3>
+  <h3 style="margin:14px 0 0">Tafels &amp; reservaties</h3>${online()?"":`<p class="hint">Online reserveren staat uit. Deze instellingen gelden zodra je het weer aanzet.</p>`}
   <div class="two"><label>Tafels binnen<input type="number" name="tb" min="0" max="20" value="${s.tables.binnen}"></label><label>Tafels terras<input type="number" name="tu" min="0" max="20" value="${s.tables.buiten}"></label></div>
   <div class="two"><label>Duur per tafel<select name="dur">${[1,1.5,2,2.5,3].map(x=>`<option value="${x}" ${x===s.dur?"selected":""}>${String(x).replace(".",",")} uur</option>`).join("")}</select></label><label>Reserveren vanaf<input type="number" name="minp" min="1" max="30" value="${s.minP}"></label></div>
-  <label>Maximum personen per reservatie<input type="number" name="maxp" min="1" max="60" value="${s.maxP}"></label>`:""}
+  <label>Maximum personen per reservatie<input type="number" name="maxp" min="1" max="60" value="${s.maxP}"></label>
   <p class="err" id="herr" role="alert"></p>
   <button class="btn sm" type="submit">Opslaan</button>
   </form></div>
- <div class="box"><h3>Sluitingsdagen &amp; vakantie</h3><p class="hint">Op deze dagen toont de site dat jullie gesloten zijn${RESERVE_ONLINE?" en kan er niet gereserveerd worden":""}.</p>
+ <div class="box"><h3>Sluitingsdagen &amp; vakantie</h3><p class="hint">Op deze dagen toont de site dat jullie gesloten zijn${online()?" en kan er niet online gereserveerd worden":""}.</p>
   ${s.closed.length?s.closed.slice().sort((a,b)=>a.from.localeCompare(b.from)).map(c=>`<div class="erow two-c"><div><b>${c.from===c.to?esc(cap(fmtDate(c.from))):esc(fmtShort(c.from))+" t.e.m. "+esc(fmtShort(c.to))+" "+c.to.slice(0,4)}</b><small>${esc(c.reason||"Gesloten")}</small></div><button class="ib" type="button" data-cdel="${c.id}" aria-label="Verwijder">×</button></div>`).join(""):`<p class="hint">Nog geen sluitingsdagen ingepland.</p>`}
   <form class="form" id="cform" style="margin-top:16px">
    <div class="two"><label>Van<input type="date" name="from" required></label><label>Tot en met<input type="date" name="to"></label></div>
@@ -267,7 +271,6 @@ function admSettings(){
  hf.addEventListener("change",e=>{const m=e.target.name&&e.target.name.match(/^o(\d)$/);if(m)hf["f"+m[1]].disabled=hf["t"+m[1]].disabled=!e.target.checked});
  hf.addEventListener("submit",e=>{e.preventDefault();const hours={};
   for(const d of [0,1,2,3,4,5,6]){if(!hf["o"+d].checked){hours[d]=null;continue}const a=hOf(hf["f"+d].value),b=hOf(hf["t"+d].value);if(!(b>a)){$("#herr").textContent="Het sluitingsuur moet na het openingsuur liggen ("+DAYS[d]+").";return}hours[d]=[a,b]}
-  if(!RESERVE_ONLINE){Object.assign(DB.settings,{hours});save();toast("Instellingen opgeslagen");renderAdmin();return}
   const minP=+hf.minp.value,maxP=+hf.maxp.value;if(!(maxP>=minP)){$("#herr").textContent="Het maximum moet minstens het minimum zijn.";return}
   Object.assign(DB.settings,{hours,tables:{binnen:+hf.tb.value,buiten:+hf.tu.value},dur:+hf.dur.value,minP,maxP});save();toast("Instellingen opgeslagen");renderAdmin()});
  $("#cform").addEventListener("submit",e=>{e.preventDefault();const f=e.target,from=f.from.value,to=f.to.value||from;if(!from){$("#cerr").textContent="Kies een datum.";return}if(to<from){$("#cerr").textContent="'Tot en met' ligt voor 'Van'.";return}
@@ -395,6 +398,6 @@ function syncLD(){
      offers:{"@type":"Offer",url,price:String(e.price),priceCurrency:"EUR",availability:left<=0?"https://schema.org/SoldOut":"https://schema.org/InStock"}}})})}
  }catch(x){}
 }
-function renderAll(){renderHours();renderEvents();refreshBooking();syncLD()}
+function renderAll(){applyReserve();renderHours();renderEvents();refreshBooking();syncLD()}
 renderAll();route();watchReveal();
 if(root.dataset.page==="home"&&!/^#\/?(beheer)/.test(location.hash))setTimeout(showPop,700);
