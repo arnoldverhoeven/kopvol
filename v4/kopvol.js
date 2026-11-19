@@ -1,5 +1,8 @@
 /* KOPVOL, website-concept v4 (sober). Demo: data in localStorage; in productie Supabase. */
-const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const MPA=true;
+/* Elke pagina heeft een eigen URL en bevat enkel haar eigen deel. Opzoekingen naar elementen van andere pagina's doen stilletjes niets. */
+const NIL=new Proxy(function(){},{get:(t,k)=>k===Symbol.toPrimitive?()=>"":(k==="value"||k==="textContent"||k==="innerHTML")?"":k==="length"?0:NIL,set:()=>true,apply:()=>NIL,construct:()=>NIL});
+const $=(s,r=document)=>r.querySelector(s)||NIL,$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const eur=n=>"€ "+(Number.isInteger(n)?n:n.toFixed(2).replace(".",","));
 const DAYS=["zondag","maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag"],MON=["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
@@ -16,7 +19,7 @@ const SW=(c="")=>`<svg class="sw ${c}" aria-hidden="true"><use href="#sw"/></svg
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("on"),2400)}
 
 /* ============ DATA (demo) ============ */
-const PH={draai:"img/draai.jpg",latte:"img/latte.jpg",coupe:"img/coupe.jpg"};
+const PH={draai:"/v4/img/draai.jpg",latte:"/v4/img/latte.jpg",coupe:"/v4/img/coupe.jpg"};
 const imgOf=e=>e.img?(PH[e.img]||e.img):"";
 /* standaard de Google-openingsuren; de eigenaars passen ze aan in het beheer */
 const DEFAULT_SETTINGS={hours:{0:[9,16],1:[9,16],2:null,3:[9,16],4:[9,16],5:[9,16],6:[9,16]},closed:[{id:"c1",from:"2026-12-24",to:"2027-01-02",reason:"Kerstvakantie"}],tables:{binnen:4,buiten:4},dur:2,minP:6,maxP:14};
@@ -53,13 +56,15 @@ burger.addEventListener("click",()=>setDrawer(true));
 drawer.addEventListener("click",e=>{if(e.target.closest("a,[data-drawer-close]"))setDrawer(false)});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(drawer.classList.contains("on")){setDrawer(false);burger.focus()}else if(!$("#adm").hidden&&!$("#dlg").open)closeAdmin()}});
 function route(){
- let p=location.hash.replace(/^#\/?/,"")||"home";
- if(p==="beheer"){openAdmin();p="home"}
- if(!PAGES[p])p="home";
- $$(".page").forEach(s=>s.classList.toggle("on",s.dataset.page===p));
+ if(MPA&&root.dataset.page==="home"){const m=/^#\/(menu|reserveren|workshops|bezoek)\/?$/.exec(location.hash);if(m){location.replace(location.pathname+m[1]+"/");return}} /* oude #/pagina-links blijven werken */
+ const hp=location.hash.replace(/^#\/?/,"");
+ let p=MPA?(root.dataset.page||"home"):(hp||"home");
+ if(hp==="beheer"){openAdmin();if(!MPA)p="home"}
+ if(!MPA&&!PAGES[p])p="home";
+ if(!MPA)$$(".page").forEach(s=>s.classList.toggle("on",s.dataset.page===p));
  $$("[data-nav]").forEach(a=>{if(a.dataset.nav===p)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
- root.dataset.page=p;document.title=PAGES[p];setDrawer(false);
- scrollTo({top:0,left:0,behavior:"instant"});
+ if(!MPA){root.dataset.page=p;document.title=PAGES[p];scrollTo({top:0,left:0,behavior:"instant"})}
+ setDrawer(false);
 }
 addEventListener("hashchange",route);
 /* ============ OPENINGSUREN & SLUITINGEN ============ */
@@ -107,7 +112,7 @@ const spots=left=>left<=0?"volzet":left===1?"nog 1 plaats":"nog "+left+" plaatse
 function renderEvents(){
  const list=upcoming();
  $("#evlist").innerHTML=list.length?list.map(e=>{const left=e.cap-taken(e.id);
-  return `<article class="ev rv"><h2>${esc(e.title)}</h2><p class="when">${esc(fmtDate(e.date))} · ${esc(e.time)}</p>${imgOf(e)?`<figure class="pic"><img src="${imgOf(e)}" alt="" loading="lazy"></figure>`:""}<div class="evb"><p>${esc(e.desc)}</p><p class="meta">${eur(e.price)} per persoon · ${spots(left)}</p><button class="btn o" type="button" data-signup="${e.id}">${left<=0?"Wachtlijst":"Inschrijven"}</button></div></article>`}).join(`<div class="evsep" aria-hidden="true">${SW("spin")}</div>`)
+  return `<article class="ev rv"><h2>${esc(e.title)}</h2><p class="when">${esc(fmtDate(e.date))} · ${esc(e.time)}</p>${imgOf(e)?`<figure class="pic"><img src="${imgOf(e)}" alt="${esc("Affiche: "+e.title+", "+fmtDate(e.date))}" loading="lazy"></figure>`:""}<div class="evb"><p>${esc(e.desc)}</p><p class="meta">${eur(e.price)} per persoon · ${spots(left)}</p><button class="btn o" type="button" data-signup="${e.id}">${left<=0?"Wachtlijst":"Inschrijven"}</button></div></article>`}).join(`<div class="evsep" aria-hidden="true">${SW("spin")}</div>`)
   :`<p class="empty">Nog even aan het fijnmalen. Nieuwe data verschijnen hier en op <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener">@kopvol.koffiebar</a>.</p>`;
  watchReveal();
 }
@@ -301,6 +306,22 @@ root.classList.add("js");
 const rvo="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add("in");rvo.unobserve(x.target)}}),{rootMargin:"0px 0px -8% 0px"}):null;
 function watchReveal(){$$(".rv:not(.in)").forEach(el=>rvo?rvo.observe(el):el.classList.add("in"))}
 
-function renderAll(){renderHours();renderEvents();refreshBooking()}
+/* ============ STRUCTURED DATA (JSON-LD) ACTUEEL HOUDEN ============ */
+const brOff=iso=>{try{const v=new Intl.DateTimeFormat("en",{timeZone:"Europe/Brussels",timeZoneName:"shortOffset"}).formatToParts(dOf(iso)).find(x=>x.type==="timeZoneName").value,m=/GMT([+-])(\d+)/.exec(v);return m[1]+m[2].padStart(2,"0")+":00"}catch(x){return "+01:00"}};
+function evTimes(e){const m=/(\d+)u(\d*)\s*[\u2013-]\s*(\d+)u(\d*)/.exec(e.time||""),f=(h,mi)=>e.date+"T"+String(h).padStart(2,"0")+":"+(mi||"00")+":00"+brOff(e.date);return m?[f(m[1],m[2]),f(m[3],m[4])]:[e.date,e.date]}
+function syncLD(){
+ const bz=document.getElementById("ld-business"),ev=document.getElementById("ld-events");if(!bz)return;
+ try{
+  const b=JSON.parse(bz.textContent),H=S().hours,P=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],sp=[];
+  [1,2,3,4,5,6,0].forEach(d=>{if(H[d])sp.push({"@type":"OpeningHoursSpecification",dayOfWeek:P[d],opens:hhmm(H[d][0]),closes:hhmm(H[d][1])})});
+  S().closed.filter(c=>c.to>=todayIso()).forEach(c=>sp.push({"@type":"OpeningHoursSpecification",opens:"00:00",closes:"00:00",validFrom:c.from,validThrough:c.to}));
+  b.openingHoursSpecification=sp;bz.textContent=JSON.stringify(b);
+  if(ev){const url=location.origin+location.pathname;
+   ev.textContent=JSON.stringify({"@context":"https://schema.org","@graph":upcoming().map(e=>{const t=evTimes(e),im=imgOf(e),left=e.cap-taken(e.id);
+    return {"@type":"Event",name:e.title,description:e.desc,startDate:t[0],endDate:t[1],eventStatus:"https://schema.org/EventScheduled",eventAttendanceMode:"https://schema.org/OfflineEventAttendanceMode",
+     location:{"@type":"Place",name:b.name,address:b.address},organizer:{"@type":"Organization",name:b.name,url:b.url},image:im&&!im.startsWith("data:")?[new URL(im,location.href).href]:undefined,
+     offers:{"@type":"Offer",url,price:String(e.price),priceCurrency:"EUR",availability:left<=0?"https://schema.org/SoldOut":"https://schema.org/InStock"}}})})}
+ }catch(x){}
+}
+function renderAll(){renderHours();renderEvents();refreshBooking();syncLD()}
 renderAll();route();watchReveal();
-
