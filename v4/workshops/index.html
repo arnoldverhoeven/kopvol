@@ -83,15 +83,14 @@ h2,.txt h1{font-size:clamp(26px,3.6vw,42px)}
 .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:start}
 .duo{max-width:calc(260px + 2*var(--pad))}
 .duo .pic{aspect-ratio:672/870;width:clamp(190px,calc((100svh - 600px)*.772),260px);margin:0 auto}
-.revs{max-width:calc(1040px + 2*var(--pad));margin:0 auto;padding:0 var(--pad)}
-.revs .g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(30px,4.5vw,60px);margin:6px 0 40px;text-align:center}
+.revs{max-width:calc(1040px + 2*var(--pad));margin:0 auto;padding:0 var(--pad) clamp(56px,8vw,104px)}
+.revs h2{margin-bottom:clamp(28px,4vw,48px)}
+.revs .g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(30px,4.5vw,60px);margin:0 0 clamp(32px,4vw,48px);text-align:center}
 .rev{margin:0}
 .rev .stars{display:flex;justify-content:center;gap:3px;margin-bottom:14px}
 .rev .stars svg{width:15px;height:15px;fill:var(--berry)}
 .rev blockquote{margin:0;font-size:17px;line-height:1.4}
 .rev figcaption{margin-top:14px;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.04em}
-.rev figcaption a{text-decoration:none}
-.rev figcaption a:hover{text-decoration:underline}
 .trio .pic{aspect-ratio:4/5}
 .trio .pic:nth-of-type(2){margin-top:64px}
 .by{font-weight:700;margin-top:1.4em!important}
