@@ -20,7 +20,7 @@
 <meta property="og:image:alt" content="Gestapelde KOPVOL-bekers, omgekeerde bekers rond een gevulde latte en een to-go dienblad met croissant">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="/v4/site.webmanifest">
-<script type="application/ld+json" id="ld-business">{"@context":"https://schema.org","@type":"CafeOrCoffeeShop","@id":"https://kopvol.netlify.app/v4/#koffiebar","name":"KOPVOL","url":"https://kopvol.netlify.app/v4/","description":"KOPVOL is de koffiebar in de Pulhof in Berchem: goede koffie, ontbijt en lunch, een zonnig terras en workshops zoals keramiek draaien en latte art.","image":["https://kopvol.netlify.app/v4/img/og.jpg"],"logo":"https://kopvol.netlify.app/v4/img/logo-berry.png","telephone":"+32483671312","email":"info@kopvolkoffiebar.be","address":{"@type":"PostalAddress","streetAddress":"Troyentenhoflaan 42","postalCode":"2600","addressLocality":"Berchem","addressRegion":"Antwerpen","addressCountry":"BE"},"geo":{"@type":"GeoCoordinates","latitude":51.1841433,"longitude":4.4272},"hasMap":"https://www.google.com/maps/place/?q=place_id:ChIJ41GYzzn3w0cR5QG5Upm_-7M","sameAs":["https://www.instagram.com/kopvol.koffiebar/","https://www.google.com/maps/place/?q=place_id:ChIJ41GYzzn3w0cR5QG5Upm_-7M"],"priceRange":"€€","servesCuisine":["Koffie","Ontbijt","Lunch"],"hasMenu":"https://kopvol.netlify.app/v4/menu/","acceptsReservations":"https://kopvol.netlify.app/v4/reserveren/","openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"09:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"09:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"09:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"09:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"09:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Sunday","opens":"09:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","opens":"00:00","closes":"00:00","validFrom":"2026-12-24","validThrough":"2027-01-02"}]}</script>
+<script type="application/ld+json" id="ld-business">{"@context":"https://schema.org","@type":"CafeOrCoffeeShop","@id":"https://kopvol.netlify.app/v4/#koffiebar","name":"KOPVOL","url":"https://kopvol.netlify.app/v4/","description":"KOPVOL is de koffiebar in de Pulhof in Berchem: goede koffie, ontbijt en lunch, een zonnig terras en workshops zoals keramiek draaien en latte art.","image":["https://kopvol.netlify.app/v4/img/og.jpg"],"logo":"https://kopvol.netlify.app/v4/img/logo-berry.png","telephone":"+32483671312","email":"info@kopvolkoffiebar.be","address":{"@type":"PostalAddress","streetAddress":"Troyentenhoflaan 42","postalCode":"2600","addressLocality":"Berchem","addressRegion":"Antwerpen","addressCountry":"BE"},"geo":{"@type":"GeoCoordinates","latitude":51.1841433,"longitude":4.4272},"hasMap":"https://www.google.com/maps/place/?q=place_id:ChIJ41GYzzn3w0cR5QG5Upm_-7M","sameAs":["https://www.instagram.com/kopvol.koffiebar/","https://www.google.com/maps/place/?q=place_id:ChIJ41GYzzn3w0cR5QG5Upm_-7M"],"priceRange":"€€","servesCuisine":["Koffie","Ontbijt","Lunch"],"hasMenu":"https://kopvol.netlify.app/v4/menu/","acceptsReservations":"https://kopvol.netlify.app/v4/reserveren/","openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"08:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"08:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"08:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"08:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"09:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Sunday","opens":"09:00","closes":"16:00"},{"@type":"OpeningHoursSpecification","opens":"00:00","closes":"00:00","validFrom":"2026-12-24","validThrough":"2027-01-02"}]}</script>
 <link rel="icon" href="/v4/favicon.ico" sizes="48x48"><link rel="icon" type="image/png" sizes="32x32" href="/v4/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/v4/favicon-192.png">
 <link rel="icon" type="image/svg+xml" href="/v4/favicon.svg">
 <link rel="apple-touch-icon" href="/v4/apple-touch-icon.png">
@@ -173,6 +173,12 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .hours li.today span,.hours li.today b{font-weight:700}
 .closures{margin-top:16px;font-size:16px}
 .closures span{display:block}
+.ons{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:14px;line-height:1.2;text-transform:uppercase;letter-spacing:.04em}
+.ons i{flex:none;width:10px;height:10px;border-radius:50%;background:var(--berry);box-shadow:0 0 0 3px rgba(150,34,34,.2)}
+.ons.on i{background:#2e8b57;box-shadow:0 0 0 3px rgba(46,139,87,.24)}
+footer .ons{font-size:13px}
+footer .ons i{background:var(--ivory);box-shadow:0 0 0 3px rgba(246,240,223,.25)}
+footer .ons.on i{background:#7be0a0;box-shadow:0 0 0 3px rgba(123,224,160,.28)}
 .lines a:not(.btn){display:block;text-decoration:none;padding:3px 0}
 .lines a:not(.btn):hover{text-decoration:underline}
 .lines .btn{margin:16px 0 26px}
@@ -398,7 +404,7 @@ table.t small{font-size:13px}
  <img class="logo" src="/v4/img/logo-ivory.png" alt="KOPVOL" width="1400" height="270" loading="lazy">
  <p class="say">Kopvol, hartje voller.</p>
  <p class="dup"><a href="/v4/bezoek/">Troyentenhoflaan 42, 2600 Berchem</a></p>
- <p class="dup" id="fhours"></p>
+ <p class="dup"><a href="/v4/bezoek/" data-opennow></a></p>
  <p class="fig"><svg class="ic" aria-hidden="true"><use href="#i-ig"/></svg><span>Brewed memories: <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener">@kopvol.koffiebar</a></span></p>
  <p class="fine">© 2026 KOPVOL · <button type="button" data-admin>Beheer</button> · Website: <a href="https://www.agv-it.be" target="_blank" rel="noopener">AGV IT Consulting</a></p>
 </footer>

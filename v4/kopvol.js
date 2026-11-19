@@ -22,7 +22,7 @@ function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clea
 const PH={draai:"/v4/img/draai.jpg",latte:"/v4/img/latte.jpg",coupe:"/v4/img/coupe.jpg"};
 const imgOf=e=>e.img?(PH[e.img]||e.img):"";
 /* standaard de Google-openingsuren; de eigenaars passen ze aan in het beheer */
-const DEFAULT_SETTINGS={hours:{0:[9,16],1:[9,16],2:null,3:[9,16],4:[9,16],5:[9,16],6:[9,16]},closed:[{id:"c1",from:"2026-12-24",to:"2027-01-02",reason:"Kerstvakantie"}],tables:{binnen:4,buiten:4},dur:2,minP:6,maxP:14};
+const DEFAULT_SETTINGS={hours:{0:[9,16],1:[8,16],2:null,3:[8,16],4:[8,16],5:[8,16],6:[9,16]},closed:[{id:"c1",from:"2026-12-24",to:"2027-01-02",reason:"Kerstvakantie"}],tables:{binnen:4,buiten:4},dur:2,minP:6,maxP:14};
 function nextIso(days,wd){const d=new Date();d.setDate(d.getDate()+days);if(wd!=null)while(d.getDay()!==wd)d.setDate(d.getDate()+1);else while(d.getDay()===2)d.setDate(d.getDate()+1);return isoOf(d)}
 const SEED_EVENTS=[
  {id:"e1",img:"draai",title:"Draai je eigen kopje",date:"2026-11-28",time:"10u – 13u",price:65,cap:8,pub:true,desc:"Ilona neemt je mee achter de draaitafel. Je draait twee kopjes, kiest je glazuur en haalt ze drie weken later gebakken op in de bar. Geen ervaring nodig."},
@@ -41,7 +41,7 @@ const SEED_BOOKINGS=[
  {id:"b2",name:"Team Studio Noor",email:"hallo@example.be",phone:"0486 65 43 21",date:nextIso(3),time:"12:00",n:6,area:"buiten",note:"",status:"nieuw",at:"2026-11-14T17:40:00"},
  {id:"b3",name:"Els Vermeulen",email:"els.v@example.be",phone:"0495 11 22 33",date:nextIso(6),time:"09:30",n:7,area:"binnen",note:"Ontbijt met collega's",status:"bevestigd",at:"2026-11-15T08:03:00"}
 ];
-const KEY="kopvol_v7";
+const KEY="kopvol_v8";
 let DB=load();
 function fresh(){return {events:structuredClone(SEED_EVENTS),regs:structuredClone(SEED_REGS),bookings:structuredClone(SEED_BOOKINGS),settings:structuredClone(DEFAULT_SETTINGS)}}
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.events&&d.settings&&d.bookings)return d}catch(e){}return fresh()}
@@ -71,33 +71,34 @@ addEventListener("hashchange",route);
 function closureFor(iso){return S().closed.find(c=>c.from<=iso&&iso<=c.to)||null}
 function hoursFor(iso){if(closureFor(iso))return null;return S().hours[dOf(iso).getDay()]||null}
 function nextOpenDay(fromIso){const d=dOf(fromIso);for(let i=1;i<90;i++){d.setDate(d.getDate()+1);const iso=isoOf(d);if(hoursFor(iso))return iso}return null}
-function hoursSummary(){
- const H=S().hours,order=[1,2,3,4,5,6,0],open=order.filter(d=>H[d]),closed=order.filter(d=>!H[d]);
- if(!open.length)return "Tijdelijk gesloten";
- const a=H[open[0]][0],b=H[open[0]][1],same=open.every(d=>H[d][0]===a&&H[d][1]===b);
- if(same&&!closed.length)return `Elke dag open van ${uur(a)} tot ${uur(b)}`;
- if(same&&closed.length<=2)return `Open van ${uur(a)} tot ${uur(b)} · ${cap(closed.map(d=>DAYS[d]).join(" en "))} rustdag`;
- return "Openingsuren: zie Bezoek";
+/* tijd in Brussel, ook als de bezoeker in een andere tijdzone zit */
+function nowBE(){
+ const p=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Brussels",hour:"numeric",minute:"numeric",year:"numeric",month:"2-digit",day:"2-digit",hour12:false}).formatToParts(new Date()),o={};p.forEach(x=>o[x.type]=x.value);
+ const iso=o.year+"-"+o.month+"-"+o.day;return {iso,h:(+o.hour%24)+(+o.minute)/60,dow:dOf(iso).getDay()};
 }
 function renderHours(){
- const H=S().hours,today=new Date().getDay();
+ let H=S().hours,today;try{today=nowBE().dow}catch(e){today=new Date().getDay()}
  $("#hours").innerHTML=[1,2,3,4,5,6,0].map(d=>`<li class="${d===today?"today":""}"><span>${cap(DAYS[d])}</span><b>${H[d]?uur(H[d][0])+" – "+uur(H[d][1]):"Rustdag"}</b></li>`).join("");
  const cl=$("#closures"),t=todayIso(),up=S().closed.filter(c=>c.to>=t).sort((x,y)=>x.from.localeCompare(y.from));
  cl.innerHTML=up.map(c=>`<span>${c.from===c.to?"Gesloten op "+fmtDate(c.from):"Gesloten van "+fmtShort(c.from)+" t.e.m. "+fmtShort(c.to)}${c.reason?" · "+esc(c.reason):""}</span>`).join("");cl.hidden=!up.length;
- $("#fhours").textContent=hoursSummary();
  renderOpenNow();
 }
-function renderOpenNow(){
- let txt="";
- try{
-  const p=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Brussels",hour:"numeric",minute:"numeric",year:"numeric",month:"2-digit",day:"2-digit",hour12:false}).formatToParts(new Date()),o={};p.forEach(x=>o[x.type]=x.value);
-  const iso=o.year+"-"+o.month+"-"+o.day,h=(+o.hour%24)+(+o.minute)/60,t=hoursFor(iso),c=closureFor(iso);
-  if(t&&h>=t[0]&&h<t[1])txt="Nu open, tot "+uur(t[1])+".";
-  else if(t&&h<t[0])txt="Vandaag open vanaf "+uur(t[0])+".";
-  else{const n=nextOpenDay(iso);if(n){const k=Math.round((dOf(n)-dOf(iso))/864e5);txt=(c?"Gesloten: "+c.reason+". ":"Nu gesloten. ")+(k===1?"Morgen":cap(fmtDate(n)))+" weer open vanaf "+uur(hoursFor(n)[0])+"."}}
- }catch(e){}
- $$("[data-opennow]").forEach(el=>el.textContent=txt);
+/* indicator: "Open nu · tot 16u" / "Gesloten · opent morgen om 8u" */
+function openState(){
+ const n=nowBE(),t=hoursFor(n.iso),c=closureFor(n.iso);
+ if(t&&n.h>=t[0]&&n.h<t[1])return {open:true,txt:"Open nu · tot "+uur(t[1])};
+ if(t&&n.h<t[0])return {open:false,txt:"Gesloten · opent vandaag om "+uur(t[0])};
+ const nx=nextOpenDay(n.iso);
+ if(!nx)return {open:false,txt:"Tijdelijk gesloten"};
+ const k=Math.round((dOf(nx)-dOf(n.iso))/864e5),when=k===1?"morgen":(c||k>=7)?fmtDate(nx):DAYS[dOf(nx).getDay()];
+ return {open:false,txt:"Gesloten · opent "+when+" om "+uur(hoursFor(nx)[0])};
 }
+function renderOpenNow(){
+ let html="";
+ try{const s=openState();html=`<span class="ons${s.open?" on":""}"><i aria-hidden="true"></i>${esc(s.txt)}</span>`}catch(e){}
+ $$("[data-opennow]").forEach(el=>el.innerHTML=html);
+}
+setInterval(renderOpenNow,60000);
 
 /* ============ DIALOOG ============ */
 const dlg=$("#dlg"),dbox=$("#dlgbox");
