@@ -1,5 +1,7 @@
 /* KOPVOL, website-concept v4 (sober). Demo: data in localStorage; in productie Supabase. */
 const MPA=true;
+/* Online reserveren staat voorlopig uit: reserveren gaat telefonisch. Zet RESERVE_ONLINE op true in build.py om het formulier en de reservaties in het beheer terug te activeren. */
+const RESERVE_ONLINE=false;
 /* Elke pagina heeft een eigen URL en bevat enkel haar eigen deel. Opzoekingen naar elementen van andere pagina's doen stilletjes niets. */
 const NIL=new Proxy(function(){},{get:(t,k)=>k===Symbol.toPrimitive?()=>"":(k==="value"||k==="textContent"||k==="innerHTML")?"":k==="length"?0:NIL,set:()=>true,apply:()=>NIL,construct:()=>NIL});
 const $=(s,r=document)=>r.querySelector(s)||NIL,$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -19,15 +21,17 @@ const SW=(c="")=>`<svg class="sw ${c}" aria-hidden="true"><use href="#sw"/></svg
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("on"),2400)}
 
 /* ============ DATA (demo) ============ */
-const PH={draai:"/v4/img/draai.jpg",latte:"/v4/img/latte.jpg",coupe:"/v4/img/coupe.jpg"};
+const PH={draai:"/v4/img/draai.jpg",latte:"/v4/img/latte.jpg",coupe:"/v4/img/coupe.jpg",iced:"/v4/img/iced.jpg",bekers:"/v4/img/bekers.jpg",popup:"/v4/img/popup.jpg"};
 const imgOf=e=>e.img?(PH[e.img]||e.img):"";
 /* standaard de Google-openingsuren; de eigenaars passen ze aan in het beheer */
 const DEFAULT_SETTINGS={hours:{0:[9,16],1:[8,16],2:null,3:[8,16],4:[8,16],5:[8,16],6:[9,16]},closed:[{id:"c1",from:"2026-12-24",to:"2027-01-02",reason:"Kerstvakantie"}],tables:{binnen:4,buiten:4},dur:2,minP:6,maxP:14};
 function nextIso(days,wd){const d=new Date();d.setDate(d.getDate()+days);if(wd!=null)while(d.getDay()!==wd)d.setDate(d.getDate()+1);else while(d.getDay()===2)d.setDate(d.getDate()+1);return isoOf(d)}
 const SEED_EVENTS=[
- {id:"e1",img:"draai",title:"Draai je eigen kopje",date:"2026-11-28",time:"10u – 13u",price:65,cap:8,pub:true,desc:"Ilona neemt je mee achter de draaitafel. Je draait twee kopjes, kiest je glazuur en haalt ze drie weken later gebakken op in de bar. Geen ervaring nodig."},
- {id:"e2",img:"latte",title:"Latte art voor beginners",date:"2026-12-13",time:"16u30 – 18u",price:35,cap:6,pub:true,desc:"Robin leert je melk stomen en een hartje gieten. Veel oefenen, en je drinkt je eigen werk op."},
- {id:"e3",img:"coupe",title:"Coupevol: cava na de uren",date:"2026-12-18",time:"18u – 22u",price:25,cap:24,pub:true,desc:"Na vieren ruilen we de koffie voor bubbels. Muziek op de achtergrond en de buurt aan tafel. Je eerste glas zit in je inschrijving."}
+ {id:"e1",type:"workshop",img:"draai",title:"Draai je eigen kopje",date:"2026-11-28",time:"10u – 13u",price:65,cap:8,pub:true,desc:"Ilona neemt je mee achter de draaitafel. Je draait twee kopjes, kiest je glazuur en haalt ze drie weken later gebakken op in de bar. Geen ervaring nodig."},
+ {id:"e2",type:"workshop",img:"latte",title:"Latte art voor beginners",date:"2026-12-13",time:"16u30 – 18u",price:35,cap:6,pub:true,desc:"Robin leert je melk stomen en een hartje gieten. Veel oefenen, en je drinkt je eigen werk op."},
+ {id:"e3",type:"event",img:"coupe",title:"Coupevol: cava na de uren",date:"2026-12-18",time:"18u – 22u",price:25,cap:24,pub:true,desc:"Na vieren ruilen we de koffie voor bubbels. Muziek op de achtergrond en de buurt aan tafel. Je eerste glas zit in je inschrijving."},
+ {id:"e4",type:"event",img:"iced",title:"Gastchef aan de bar",date:"2026-12-04",time:"18u30 – 22u",price:55,cap:20,pub:true,desc:"Elke maand nodigt Robin een gastchef uit. Voorbeeldtekst: hier komt wie er kookt en wat er op het menu staat."},
+ {id:"e5",type:"event",img:"bekers",title:"Gastchefavond",date:"2026-10-23",time:"18u30 – 22u",price:55,cap:20,pub:true,desc:"Voorbeeldtekst: voorbije events blijven hier staan, met een korte terugblik."}
 ];
 const SEED_REGS=[
  {id:"r1",ev:"e1",name:"Sofie Van den Broeck",email:"sofie.vdb@example.be",n:2,note:"",at:"2026-11-04T19:22:00"},
@@ -41,23 +45,25 @@ const SEED_BOOKINGS=[
  {id:"b2",name:"Team Studio Noor",email:"hallo@example.be",phone:"0486 65 43 21",date:nextIso(3),time:"12:00",n:6,area:"buiten",note:"",status:"nieuw",at:"2026-11-14T17:40:00"},
  {id:"b3",name:"Els Vermeulen",email:"els.v@example.be",phone:"0495 11 22 33",date:nextIso(6),time:"09:30",n:7,area:"binnen",note:"Ontbijt met collega's",status:"bevestigd",at:"2026-11-15T08:03:00"}
 ];
-const KEY="kopvol_v8";
+const DEFAULT_POPUP={on:false,img:"popup",alt:"Kerstvakantie: KOPVOL is gesloten van 24 december tot en met 2 januari en opent opnieuw op zondag 3 januari om 9u.",from:"2026-11-20",to:"2027-01-02"};
+const KEY="kopvol_v9";
 let DB=load();
-function fresh(){return {events:structuredClone(SEED_EVENTS),regs:structuredClone(SEED_REGS),bookings:structuredClone(SEED_BOOKINGS),settings:structuredClone(DEFAULT_SETTINGS)}}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.events&&d.settings&&d.bookings)return d}catch(e){}return fresh()}
+function fresh(){return {events:structuredClone(SEED_EVENTS),regs:structuredClone(SEED_REGS),bookings:structuredClone(SEED_BOOKINGS),settings:structuredClone(DEFAULT_SETTINGS),popup:structuredClone(DEFAULT_POPUP)}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.events&&d.settings&&d.bookings){if(!d.popup)d.popup=structuredClone(DEFAULT_POPUP);return d}}catch(e){}return fresh()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
 const S=()=>DB.settings;
 
 /* ============ NAVIGATIE ============ */
-const PAGES={home:"KOPVOL | Koffiebar in Berchem",menu:"Menu | KOPVOL",workshops:"Workshops | KOPVOL",reserveren:"Reserveren | KOPVOL",bezoek:"Bezoek | KOPVOL"};
+const PAGES={home:"KOPVOL | Koffiebar in Berchem",menu:"Menu | KOPVOL",reserveren:"Reserveren | KOPVOL",workshops:"Workshops | KOPVOL",events:"Events | KOPVOL",contact:"Contact | KOPVOL"};
+const ALIAS={bezoek:"contact"}; /* oude links naar /bezoek blijven werken */
 const root=document.documentElement,drawer=$("#drawer"),burger=$("#burger");
 function setDrawer(on){drawer.classList.toggle("on",on);burger.setAttribute("aria-expanded",on);root.classList.toggle("nav-open",on);if(on)$("[data-drawer-close]").focus()}
 burger.addEventListener("click",()=>setDrawer(true));
 drawer.addEventListener("click",e=>{if(e.target.closest("a,[data-drawer-close]"))setDrawer(false)});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(drawer.classList.contains("on")){setDrawer(false);burger.focus()}else if(!$("#adm").hidden&&!$("#dlg").open)closeAdmin()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(drawer.classList.contains("on")){setDrawer(false);burger.focus()}else if(!$("#adm").hidden&&!$("#dlg").open&&!$("#pop").open)closeAdmin()}});
 function route(){
- if(MPA&&root.dataset.page==="home"){const m=/^#\/(menu|reserveren|workshops|bezoek)\/?$/.exec(location.hash);if(m){location.replace(location.pathname+m[1]+"/");return}} /* oude #/pagina-links blijven werken */
- const hp=location.hash.replace(/^#\/?/,"");
+ if(MPA&&root.dataset.page==="home"){const m=/^#\/(menu|reserveren|workshops|events|contact|bezoek)\/?$/.exec(location.hash);if(m){location.replace(location.pathname+(ALIAS[m[1]]||m[1])+"/");return}} /* oude #/pagina-links blijven werken */
+ let hp=location.hash.replace(/^#\/?/,"");hp=ALIAS[hp]||hp;
  let p=MPA?(root.dataset.page||"home"):(hp||"home");
  if(hp==="beheer"){openAdmin();if(!MPA)p="home"}
  if(!MPA&&!PAGES[p])p="home";
@@ -77,8 +83,8 @@ function nowBE(){
  const iso=o.year+"-"+o.month+"-"+o.day;return {iso,h:(+o.hour%24)+(+o.minute)/60,dow:dOf(iso).getDay()};
 }
 function renderHours(){
- let H=S().hours,today;try{today=nowBE().dow}catch(e){today=new Date().getDay()}
- $("#hours").innerHTML=[1,2,3,4,5,6,0].map(d=>`<li class="${d===today?"today":""}"><span>${cap(DAYS[d])}</span><b>${H[d]?uur(H[d][0])+" – "+uur(H[d][1]):"Rustdag"}</b></li>`).join("");
+ const H=S().hours;
+ $("#hours").innerHTML=[1,2,3,4,5,6,0].map(d=>`<li><span>${cap(DAYS[d])}</span><b>${H[d]?uur(H[d][0])+" – "+uur(H[d][1]):"Rustdag"}</b></li>`).join("");
  const cl=$("#closures"),t=todayIso(),up=S().closed.filter(c=>c.to>=t).sort((x,y)=>x.from.localeCompare(y.from));
  cl.innerHTML=up.map(c=>`<span>${c.from===c.to?"Gesloten op "+fmtDate(c.from):"Gesloten van "+fmtShort(c.from)+" t.e.m. "+fmtShort(c.to)}${c.reason?" · "+esc(c.reason):""}</span>`).join("");cl.hidden=!up.length;
  renderOpenNow();
@@ -108,13 +114,20 @@ dlg.addEventListener("click",e=>{if(e.target===dlg||e.target.closest("[data-clos
 
 /* ============ WORKSHOPS ============ */
 const taken=id=>DB.regs.filter(r=>r.ev===id).reduce((a,r)=>a+r.n,0);
-function upcoming(){const t=todayIso();return DB.events.filter(e=>e.pub&&e.date>=t).sort((a,b)=>a.date.localeCompare(b.date))}
+const typeOf=e=>e.type==="event"?"event":"workshop";
+function upcoming(type){const t=todayIso();return DB.events.filter(e=>e.pub&&e.date>=t&&(!type||typeOf(e)===type)).sort((a,b)=>a.date.localeCompare(b.date))}
+function pastEvents(type){const t=todayIso();return DB.events.filter(e=>e.pub&&e.date<t&&typeOf(e)===type).sort((a,b)=>b.date.localeCompare(a.date))}
 const spots=left=>left<=0?"volzet":left===1?"nog 1 plaats":"nog "+left+" plaatsen";
+/* titel, dan de afbeelding, dan datum en uur met de verdere info */
+function evCard(e){const left=e.cap-taken(e.id);
+ return `<article class="ev rv"><h2>${esc(e.title)}</h2>${imgOf(e)?`<figure class="pic"><img src="${imgOf(e)}" alt="${esc("Affiche: "+e.title+", "+fmtDate(e.date))}" loading="lazy"></figure>`:""}<div class="evb"><p class="when">${esc(fmtDate(e.date))} · ${esc(e.time)}</p><p>${esc(e.desc)}</p><p class="meta">${eur(e.price)} per persoon · ${spots(left)}</p><button class="btn o" type="button" data-signup="${e.id}">${left<=0?"Wachtlijst":"Inschrijven"}</button></div></article>`}
+function pastCard(e){return `<article class="pe rv"><span class="tag">Afgelopen</span>${imgOf(e)?`<figure class="pic"><img src="${imgOf(e)}" alt="${esc(e.title)}" loading="lazy"></figure>`:""}<h3>${esc(e.title)}</h3><p class="when">${esc(fmtDate(e.date))} · ${esc(e.time)}</p><p>${esc(e.desc)}</p></article>`}
+const emptyMsg=what=>`<p class="empty">Nog even aan het fijnmalen. Nieuwe ${what} verschijnen hier en op <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener">@kopvol.koffiebar</a>.</p>`;
 function renderEvents(){
- const list=upcoming();
- $("#evlist").innerHTML=list.length?list.map(e=>{const left=e.cap-taken(e.id);
-  return `<article class="ev rv"><h2>${esc(e.title)}</h2><p class="when">${esc(fmtDate(e.date))} · ${esc(e.time)}</p>${imgOf(e)?`<figure class="pic"><img src="${imgOf(e)}" alt="${esc("Affiche: "+e.title+", "+fmtDate(e.date))}" loading="lazy"></figure>`:""}<div class="evb"><p>${esc(e.desc)}</p><p class="meta">${eur(e.price)} per persoon · ${spots(left)}</p><button class="btn o" type="button" data-signup="${e.id}">${left<=0?"Wachtlijst":"Inschrijven"}</button></div></article>`}).join(`<div class="evsep" aria-hidden="true">${SW("spin")}</div>`)
-  :`<p class="empty">Nog even aan het fijnmalen. Nieuwe data verschijnen hier en op <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener">@kopvol.koffiebar</a>.</p>`;
+ const sep=`<div class="evsep" aria-hidden="true">${SW("spin")}</div>`,ws=upcoming("workshop"),es=upcoming("event"),ps=pastEvents("event");
+ $("#evlist").innerHTML=ws.length?ws.map(evCard).join(sep):emptyMsg("workshops");
+ $("#evup").innerHTML=es.length?es.map(evCard).join(sep):emptyMsg("events");
+ const pp=$("#evpast");pp.innerHTML=ps.length?(es.length?sep:"")+`<h2 id="pasth">Afgelopen events</h2><div class="pg">${ps.map(pastCard).join("")}</div>`:"";pp.hidden=!ps.length;
  watchReveal();
 }
 function signupDlg(id){
@@ -203,7 +216,7 @@ bf.addEventListener("submit",e=>{e.preventDefault();berr.textContent="";
  bf.reset();refreshBooking()});
 
 /* ============ BEHEER (mini-CMS) ============ */
-const PIN="2600";let admAuth=false,admTab="bookings",editId=null;
+const PIN="2600";let admAuth=false,admTab=RESERVE_ONLINE?"bookings":"workshop",editId=null;
 const adm=$("#adm"),ab=$("#admbody");
 function openAdmin(){adm.hidden=false;root.classList.add("adm-open");renderAdmin();adm.scrollTop=0}
 function closeAdmin(){adm.hidden=true;root.classList.remove("adm-open");renderAll()}
@@ -212,9 +225,9 @@ function renderAdmin(){
   $("#pinform").addEventListener("submit",e=>{e.preventDefault();if(e.target.pin.value===PIN){admAuth=true;renderAdmin()}else $("#perr").textContent="Foute pincode."});$("#pinform").pin.focus();return}
  const newB=DB.bookings.filter(x=>x.status==="nieuw").length;
  const tab=(k,l)=>`<button type="button" data-at="${k}" aria-current="${admTab===k}">${l}</button>`;
- ab.innerHTML=`<div class="tabs">${tab("bookings","Reservaties"+(newB?" ("+newB+" nieuw)":""))}${tab("settings","Openingsuren &amp; tafels")}${tab("events","Workshops")}${tab("regs","Inschrijvingen ("+DB.regs.length+")")}</div><div id="admtab"></div>`;
- $$("[data-at]",ab).forEach(x=>x.addEventListener("click",()=>{admTab=x.dataset.at;renderAdmin()}));
- ({bookings:admBookings,settings:admSettings,events:admEvents,regs:admRegs})[admTab]();
+ ab.innerHTML=`<div class="tabs">${RESERVE_ONLINE?tab("bookings","Reservaties"+(newB?" ("+newB+" nieuw)":"")):""}${tab("workshop","Workshops")}${tab("event","Events")}${tab("regs","Inschrijvingen ("+DB.regs.length+")")}${tab("popup","Pop-up")}${tab("settings",RESERVE_ONLINE?"Openingsuren &amp; tafels":"Openingsuren")}</div><div id="admtab"></div>`;
+ $$("[data-at]",ab).forEach(x=>x.addEventListener("click",()=>{admTab=x.dataset.at;editId=null;renderAdmin()}));
+ if(admTab==="workshop"||admTab==="event")admEvents(admTab);else ({bookings:admBookings,settings:admSettings,regs:admRegs,popup:admPopup})[admTab]();
 }
 function csv(name,head,rows){const t=[head,...rows.map(r=>r.map(v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"').join(";"))].join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+t],{type:"text/csv;charset=utf-8"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function admBookings(){
@@ -235,14 +248,14 @@ function admSettings(){
  <div class="box"><h3>Openingsuren</h3><p class="hint">Vink een dag uit voor een vaste rustdag.</p>
   <form class="form" id="hform">
   ${[1,2,3,4,5,6,0].map(d=>`<div class="ohrow"><label class="chk"><input type="checkbox" name="o${d}" ${s.hours[d]?"checked":""}>${cap(DAYS[d])}</label><input type="time" name="f${d}" aria-label="${cap(DAYS[d])} open vanaf" value="${s.hours[d]?hhmm(s.hours[d][0]):"09:00"}" step="1800" ${s.hours[d]?"":"disabled"}><span>tot</span><input type="time" name="t${d}" aria-label="${cap(DAYS[d])} open tot" value="${s.hours[d]?hhmm(s.hours[d][1]):"16:00"}" step="1800" ${s.hours[d]?"":"disabled"}></div>`).join("")}
-  <h3 style="margin:14px 0 0">Tafels &amp; reservaties</h3>
+  ${RESERVE_ONLINE?`<h3 style="margin:14px 0 0">Tafels &amp; reservaties</h3>
   <div class="two"><label>Tafels binnen<input type="number" name="tb" min="0" max="20" value="${s.tables.binnen}"></label><label>Tafels terras<input type="number" name="tu" min="0" max="20" value="${s.tables.buiten}"></label></div>
   <div class="two"><label>Duur per tafel<select name="dur">${[1,1.5,2,2.5,3].map(x=>`<option value="${x}" ${x===s.dur?"selected":""}>${String(x).replace(".",",")} uur</option>`).join("")}</select></label><label>Reserveren vanaf<input type="number" name="minp" min="1" max="30" value="${s.minP}"></label></div>
-  <label>Maximum personen per reservatie<input type="number" name="maxp" min="1" max="60" value="${s.maxP}"></label>
+  <label>Maximum personen per reservatie<input type="number" name="maxp" min="1" max="60" value="${s.maxP}"></label>`:""}
   <p class="err" id="herr" role="alert"></p>
   <button class="btn sm" type="submit">Opslaan</button>
   </form></div>
- <div class="box"><h3>Sluitingsdagen &amp; vakantie</h3><p class="hint">Op deze dagen kan er niet gereserveerd worden en toont de site dat jullie gesloten zijn.</p>
+ <div class="box"><h3>Sluitingsdagen &amp; vakantie</h3><p class="hint">Op deze dagen toont de site dat jullie gesloten zijn${RESERVE_ONLINE?" en kan er niet gereserveerd worden":""}.</p>
   ${s.closed.length?s.closed.slice().sort((a,b)=>a.from.localeCompare(b.from)).map(c=>`<div class="erow two-c"><div><b>${c.from===c.to?esc(cap(fmtDate(c.from))):esc(fmtShort(c.from))+" t.e.m. "+esc(fmtShort(c.to))+" "+c.to.slice(0,4)}</b><small>${esc(c.reason||"Gesloten")}</small></div><button class="ib" type="button" data-cdel="${c.id}" aria-label="Verwijder">×</button></div>`).join(""):`<p class="hint">Nog geen sluitingsdagen ingepland.</p>`}
   <form class="form" id="cform" style="margin-top:16px">
    <div class="two"><label>Van<input type="date" name="from" required></label><label>Tot en met<input type="date" name="to"></label></div>
@@ -254,44 +267,93 @@ function admSettings(){
  hf.addEventListener("change",e=>{const m=e.target.name&&e.target.name.match(/^o(\d)$/);if(m)hf["f"+m[1]].disabled=hf["t"+m[1]].disabled=!e.target.checked});
  hf.addEventListener("submit",e=>{e.preventDefault();const hours={};
   for(const d of [0,1,2,3,4,5,6]){if(!hf["o"+d].checked){hours[d]=null;continue}const a=hOf(hf["f"+d].value),b=hOf(hf["t"+d].value);if(!(b>a)){$("#herr").textContent="Het sluitingsuur moet na het openingsuur liggen ("+DAYS[d]+").";return}hours[d]=[a,b]}
+  if(!RESERVE_ONLINE){Object.assign(DB.settings,{hours});save();toast("Instellingen opgeslagen");renderAdmin();return}
   const minP=+hf.minp.value,maxP=+hf.maxp.value;if(!(maxP>=minP)){$("#herr").textContent="Het maximum moet minstens het minimum zijn.";return}
   Object.assign(DB.settings,{hours,tables:{binnen:+hf.tb.value,buiten:+hf.tu.value},dur:+hf.dur.value,minP,maxP});save();toast("Instellingen opgeslagen");renderAdmin()});
  $("#cform").addEventListener("submit",e=>{e.preventDefault();const f=e.target,from=f.from.value,to=f.to.value||from;if(!from){$("#cerr").textContent="Kies een datum.";return}if(to<from){$("#cerr").textContent="'Tot en met' ligt voor 'Van'.";return}
   DB.settings.closed.push({id:uid(),from,to,reason:f.reason.value.trim()});save();toast("Sluitingsdag toegevoegd");renderAdmin()});
  el.addEventListener("click",e=>{const b=e.target.closest("[data-cdel]");if(b){DB.settings.closed=DB.settings.closed.filter(c=>c.id!==b.dataset.cdel);save();renderAdmin()}});
 }
-function admEvents(){
- const e=editId?DB.events.find(x=>x.id===editId):null,el=$("#admtab");
+const TL={
+ workshop:{all:"Alle workshops",new:"Nieuwe workshop",edit:"Workshop bewerken",none:"Nog geen workshops.",added:"Workshop toegevoegd",upd:"Workshop bijgewerkt",ph:"19u – 21u"},
+ event:{all:"Alle events",new:"Nieuw event",edit:"Event bewerken",none:"Nog geen events.",added:"Event toegevoegd",upd:"Event bijgewerkt",ph:"18u30 – 22u"}};
+/* verkleint een gekozen JPEG of PNG in de browser en geeft een data-URL terug */
+function readImage(file,max,done,fail){
+ if(!/^image\/(jpeg|png)$/.test(file.type)){fail("Kies een JPEG- of PNG-bestand.");return}
+ if(file.size>8e6){fail("De afbeelding is te groot (max. 8 MB).");return}
+ const im=new Image(),url=URL.createObjectURL(file);
+ im.onerror=()=>{URL.revokeObjectURL(url);fail("Deze afbeelding kon niet gelezen worden.")};
+ im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const g=c.getContext("2d");
+  let out;if(file.type==="image/png"){g.drawImage(im,0,0,c.width,c.height);out=c.toDataURL("image/png");if(out.length>1.4e6){g.clearRect(0,0,c.width,c.height);g.fillStyle="#F6F0DF";g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);out=c.toDataURL("image/jpeg",.85)}}
+  else{g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);out=c.toDataURL("image/jpeg",.85)}
+  URL.revokeObjectURL(url);done(out)};
+ im.src=url}
+function admEvents(T){
+ const L=TL[T],today=todayIso(),e=editId?DB.events.find(x=>x.id===editId&&typeOf(x)===T):null,el=$("#admtab"),mine=DB.events.filter(x=>typeOf(x)===T);
  el.innerHTML=`<div class="agrid">
- <div class="box"><h3>${e?"Workshop bewerken":"Nieuwe workshop"}</h3><form class="form" id="evform">
+ <div class="box"><h3>${e?L.edit:L.new}</h3><form class="form" id="evform">
   <label>Titel<input name="title" required value="${e?esc(e.title):""}"></label>
-  <div class="two"><label>Datum<input name="date" type="date" required value="${e?e.date:""}"></label><label>Uur<input name="time" required value="${e?esc(e.time):""}" placeholder="19u – 21u"></label></div>
+  <div class="two"><label>Datum<input name="date" type="date" required value="${e?e.date:""}"></label><label>Uur<input name="time" required value="${e?esc(e.time):""}" placeholder="${L.ph}"></label></div>
   <div class="two"><label>Prijs p.p. (€)<input name="price" type="number" min="0" step="0.5" required value="${e?e.price:""}"></label><label>Plaatsen<input name="cap" type="number" min="1" max="200" required value="${e?e.cap:8}"></label></div>
   <label>Omschrijving<textarea name="desc" required>${e?esc(e.desc):""}</textarea></label>
-  <label>Foto<span class="drop" id="drop">${e&&imgOf(e)?`<img src="${imgOf(e)}" alt="">`:`<span>Kies een foto<br>of sleep ze hierheen</span>`}<input type="file" accept="image/*" name="img" aria-label="Foto kiezen"></span></label>
+  <label>Foto<span class="drop" id="drop">${e&&imgOf(e)?`<img src="${imgOf(e)}" alt="">`:`<span>Kies een foto<br>of sleep ze hierheen</span>`}<input type="file" accept="image/jpeg,image/png" name="img" aria-label="Foto kiezen"></span></label>
   <label class="chk"><input type="checkbox" name="pub" ${!e||e.pub?"checked":""}>Zichtbaar op de website</label>
   <p class="err" id="everr" role="alert"></p>
   <div class="acts"><button class="btn sm" type="submit">${e?"Opslaan":"Toevoegen"}</button>${e?`<button class="btn o sm" type="button" data-cancel>Annuleren</button>`:""}</div>
  </form></div>
- <div class="box"><h3>Alle workshops</h3>${DB.events.length?DB.events.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(x=>`<div class="erow">${imgOf(x)?`<img class="th" src="${imgOf(x)}" alt="">`:`<span class="th"></span>`}<div><b>${esc(x.title)}</b> <span class="st ${x.pub?"live":""}">${x.pub?"Online":"Verborgen"}</span><small>${esc(cap(fmtDate(x.date)))} · ${esc(x.time)} · ${eur(x.price)} · ${taken(x.id)}/${x.cap} plaatsen</small></div><div class="acts"><button class="ib" type="button" data-edit="${x.id}">Bewerk</button><button class="ib" type="button" data-toggle="${x.id}">${x.pub?"Verberg":"Toon"}</button><button class="ib" type="button" data-del="${x.id}" aria-label="Verwijder">×</button></div></div>`).join(""):`<p class="hint">Nog geen workshops.</p>`}</div></div>`;
+ <div class="box"><h3>${L.all}</h3>${mine.length?mine.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(x=>`<div class="erow">${imgOf(x)?`<img class="th" src="${imgOf(x)}" alt="">`:`<span class="th"></span>`}<div><b>${esc(x.title)}</b> <span class="st ${x.pub?"live":""}">${x.pub?"Online":"Verborgen"}</span>${x.date<today?' <span class="st">Voorbij</span>':""}<small>${esc(cap(fmtDate(x.date)))} · ${esc(x.time)} · ${eur(x.price)} · ${taken(x.id)}/${x.cap} plaatsen</small></div><div class="acts"><button class="ib" type="button" data-edit="${x.id}">Bewerk</button><button class="ib" type="button" data-toggle="${x.id}">${x.pub?"Verberg":"Toon"}</button><button class="ib" type="button" data-del="${x.id}" aria-label="Verwijder">×</button></div></div>`).join(""):`<p class="hint">${L.none}</p>`}</div></div>`;
  let imgData=e?e.img||"":"";
  const drop=$("#drop"),inp=$("input",drop);
- inp.addEventListener("change",()=>{const fl=inp.files[0];if(!fl)return;if(fl.size>8e6){$("#everr").textContent="De foto is te groot (max. 8 MB).";return}
-  const im=new Image(),url=URL.createObjectURL(fl);im.onload=()=>{const c=document.createElement("canvas"),k=Math.min(1,1200/im.width);c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);imgData=c.toDataURL("image/jpeg",.8);drop.innerHTML=`<img src="${imgData}" alt="">`;drop.appendChild(inp);URL.revokeObjectURL(url)};im.src=url});
- $("#evform").addEventListener("submit",ev=>{ev.preventDefault();const f=ev.target,o={title:f.title.value.trim(),date:f.date.value,time:f.time.value.trim(),price:+f.price.value,cap:+f.cap.value,desc:f.desc.value.trim(),img:imgData,pub:f.pub.checked};
+ inp.addEventListener("change",()=>{const fl=inp.files[0];if(!fl)return;
+  readImage(fl,1200,d=>{imgData=d;$("#everr").textContent="";drop.innerHTML=`<img src="${imgData}" alt="">`;drop.appendChild(inp)},m=>{$("#everr").textContent=m})});
+ $("#evform").addEventListener("submit",ev=>{ev.preventDefault();const f=ev.target,o={type:T,title:f.title.value.trim(),date:f.date.value,time:f.time.value.trim(),price:+f.price.value,cap:+f.cap.value,desc:f.desc.value.trim(),img:imgData,pub:f.pub.checked};
   if(!o.title||!o.date||!o.time||!o.desc||!(o.cap>0)||!(o.price>=0)||f.price.value===""){$("#everr").textContent="Vul alle velden in.";return}
-  if(e)Object.assign(e,o);else DB.events.push(Object.assign({id:uid()},o));save();editId=null;renderAdmin();toast(e?"Workshop bijgewerkt":"Workshop toegevoegd")});
+  if(e)Object.assign(e,o);else DB.events.push(Object.assign({id:uid()},o));save();editId=null;renderAdmin();toast(e?L.upd:L.added)});
  el.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;
   if(b.dataset.edit){editId=b.dataset.edit;renderAdmin();adm.scrollTop=0;return}
   if(b.dataset.toggle){const x=DB.events.find(y=>y.id===b.dataset.toggle);x.pub=!x.pub;save();renderAdmin();return}
   if(b.dataset.del){const x=DB.events.find(y=>y.id===b.dataset.del);if(confirm(`"${x.title}" verwijderen? Ook de inschrijvingen verdwijnen.`)){DB.events=DB.events.filter(y=>y.id!==x.id);DB.regs=DB.regs.filter(r=>r.ev!==x.id);if(editId===x.id)editId=null;save();renderAdmin()}return}
   if(b.hasAttribute("data-cancel")){editId=null;renderAdmin()}});
 }
+/* pop-up op de startpagina: afbeelding + periode */
+function popState(p){const t=todayIso();
+ if(!p.img)return {k:"Geen afbeelding gekozen",live:false};
+ if(!p.on)return {k:"Uitgeschakeld",live:false};
+ if(p.from&&t<p.from)return {k:"Gepland: verschijnt vanaf "+fmtShort(p.from),live:false};
+ if(p.to&&t>p.to)return {k:"Verlopen op "+fmtShort(p.to),live:false};
+ return {k:"Nu zichtbaar voor bezoekers",live:true}}
+function admPopup(){
+ const p=DB.popup,el=$("#admtab"),st=popState(p);
+ el.innerHTML=`<div class="agrid">
+ <div class="box"><h3>Pop-up op de startpagina</h3><p class="hint">Een afbeelding (JPEG of PNG) die bij het openen van de startpagina over de site verschijnt, bijvoorbeeld voor een aankondiging of aangepaste openingsuren. Ze verschijnt één keer per bezoek en enkel tussen de gekozen data.</p>
+  <form class="form" id="pform">
+   <label>Afbeelding<span class="drop" id="pdrop">${p.img?`<img src="${imgOf(p)}" alt="">`:`<span>Kies een JPEG of PNG<br>of sleep ze hierheen</span>`}<input type="file" accept="image/jpeg,image/png" name="img" aria-label="Afbeelding kiezen"></span></label>
+   <label>Beschrijving voor slechtziende bezoekers<input name="alt" maxlength="200" value="${esc(p.alt||"")}" placeholder="bv. Gesloten van 24 december tot 2 januari"></label>
+   <div class="two"><label>Tonen vanaf<input type="date" name="from" value="${p.from||""}"></label><label>Tot en met<input type="date" name="to" value="${p.to||""}"></label></div>
+   <label class="chk"><input type="checkbox" name="on" ${p.on?"checked":""}>Pop-up actief</label>
+   <p class="err" id="perr" role="alert"></p>
+   <div class="acts"><button class="btn sm" type="submit">Opslaan</button><button class="btn o sm" type="button" data-ppreview ${p.img?"":"disabled"}>Voorbeeld</button>${p.img?`<button class="btn o sm" type="button" data-pclear>Afbeelding verwijderen</button>`:""}</div>
+  </form></div>
+ <div class="box"><h3>Status</h3><p><span class="st ${st.live?"live":""}">${esc(st.k)}</span></p>${p.from||p.to?`<p class="hint" style="margin-top:12px">${p.from?"Vanaf "+esc(cap(fmtDate(p.from))):""}${p.from&&p.to?" ":""}${p.to?"t.e.m. "+esc(fmtDate(p.to)):""}</p>`:""}
+  <p class="hint" style="margin-top:12px">Bezoekers die de pop-up gesloten hebben, zien ze pas bij een volgend bezoek opnieuw.</p></div></div>`;
+ const f=$("#pform"),drop=$("#pdrop"),inp=$("input",drop);let img=p.img;
+ inp.addEventListener("change",()=>{const fl=inp.files[0];if(!fl)return;
+  readImage(fl,1200,d=>{img=d;$("#perr").textContent="";drop.innerHTML=`<img src="${img}" alt="">`;drop.appendChild(inp);$("[data-ppreview]",el).disabled=false},m=>{$("#perr").textContent=m})});
+ const read=()=>({on:f.on.checked,img,alt:f.alt.value.trim(),from:f.from.value,to:f.to.value});
+ f.addEventListener("submit",e=>{e.preventDefault();const o=read();
+  if(o.on&&!o.img){$("#perr").textContent="Kies eerst een afbeelding.";return}
+  if(o.on&&(!o.from||!o.to)){$("#perr").textContent="Kies een start- en einddatum.";return}
+  if(o.from&&o.to&&o.to<o.from){$("#perr").textContent="De einddatum ligt voor de startdatum.";return}
+  DB.popup=o;try{sessionStorage.removeItem("kopvol_pop")}catch(x){}save();toast("Pop-up opgeslagen");renderAdmin()});
+ el.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  if(b.hasAttribute("data-ppreview")){showPop(true,read());return}
+  if(b.hasAttribute("data-pclear")){DB.popup=Object.assign(read(),{img:"",on:false});save();renderAdmin()}});
+}
 function admRegs(){
  const evs=DB.events.slice().sort((a,b)=>a.date.localeCompare(b.date)),el=$("#admtab");
  el.innerHTML=evs.length?evs.map(e=>{const rs=DB.regs.filter(r=>r.ev===e.id).sort((a,b)=>a.at.localeCompare(b.at)),n=rs.reduce((a,r)=>a+r.n,0);
-  return `<div class="box"><div class="rowh"><div><h3>${esc(e.title)}</h3><small>${esc(cap(fmtDate(e.date)))} · ${n}/${e.cap} plaatsen</small></div><button class="ib" type="button" data-csv="${e.id}" ${rs.length?"":"disabled"}>CSV</button></div>
-  ${rs.length?`<div style="overflow-x:auto"><table class="t"><thead><tr><th>Naam</th><th>E-mail</th><th>Pers.</th><th>Opmerking</th><th>Datum</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr><td><b>${esc(r.name)}</b>${r.wait?' <span class="st">wachtlijst</span>':""}</td><td><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></td><td>${r.n}</td><td>${esc(r.note||"")}</td><td>${new Date(r.at).toLocaleDateString("nl-BE")}</td><td><button class="ib" type="button" data-rdel="${r.id}" aria-label="Verwijder">×</button></td></tr>`).join("")}</tbody></table></div>`:`<p class="hint">Nog geen inschrijvingen.</p>`}</div>`}).join(""):`<p class="hint">Nog geen workshops.</p>`;
+  return `<div class="box"><div class="rowh"><div><h3>${esc(e.title)}</h3><small>${typeOf(e)==="event"?"Event":"Workshop"} · ${esc(cap(fmtDate(e.date)))} · ${n}/${e.cap} plaatsen</small></div><button class="ib" type="button" data-csv="${e.id}" ${rs.length?"":"disabled"}>CSV</button></div>
+  ${rs.length?`<div style="overflow-x:auto"><table class="t"><thead><tr><th>Naam</th><th>E-mail</th><th>Pers.</th><th>Opmerking</th><th>Datum</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr><td><b>${esc(r.name)}</b>${r.wait?' <span class="st">wachtlijst</span>':""}</td><td><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></td><td>${r.n}</td><td>${esc(r.note||"")}</td><td>${new Date(r.at).toLocaleDateString("nl-BE")}</td><td><button class="ib" type="button" data-rdel="${r.id}" aria-label="Verwijder">×</button></td></tr>`).join("")}</tbody></table></div>`:`<p class="hint">Nog geen inschrijvingen.</p>`}</div>`}).join(""):`<p class="hint">Nog geen workshops of events.</p>`;
  el.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;
   if(b.dataset.rdel){if(confirm("Inschrijving verwijderen?")){DB.regs=DB.regs.filter(r=>r.id!==b.dataset.rdel);save();renderAdmin()}return}
   if(b.dataset.csv){const e=DB.events.find(x=>x.id===b.dataset.csv);csv("inschrijvingen-"+e.title.toLowerCase().replace(/[^a-z0-9]+/g,"-")+".csv","Naam;E-mail;Personen;Opmerking;Ingeschreven;Wachtlijst",DB.regs.filter(r=>r.ev===e.id).map(r=>[r.name,r.email,r.n,r.note,r.at.slice(0,10),r.wait?"ja":"nee"]))}});
@@ -299,8 +361,17 @@ function admRegs(){
 document.addEventListener("click",e=>{
  if(e.target.closest("[data-admin]")){openAdmin();return}
  if(e.target.closest("[data-admin-close]")){closeAdmin();return}
- if(e.target.closest("[data-reset]")){if(confirm("Demo-data terugzetten? Eigen workshops, reservaties en instellingen verdwijnen.")){DB=fresh();save();editId=null;renderAdmin();toast("Demo teruggezet")}}
+ if(e.target.closest("[data-reset]")){if(confirm("Demo-data terugzetten? Eigen workshops, events, reservaties, pop-up en instellingen verdwijnen.")){DB=fresh();save();editId=null;renderAdmin();toast("Demo teruggezet")}}
 });
+
+/* ============ POP-UP OP DE STARTPAGINA ============ */
+const pop=$("#pop"),popBox=$("#popbox");
+function showPop(force,p){
+ p=p||DB.popup;if(!p||!p.img)return;
+ if(!force){if(!popState(p).live)return;const sig=[p.from,p.to,p.img.length].join("|");try{if(sessionStorage.getItem("kopvol_pop")===sig)return;sessionStorage.setItem("kopvol_pop",sig)}catch(e){}}
+ popBox.innerHTML=XBTN+`<img src="${imgOf(p)}" alt="${esc(p.alt||"Mededeling van KOPVOL")}">`;if(!pop.open)pop.showModal();
+}
+pop.addEventListener("click",e=>{if(e.target===pop||e.target.closest("[data-close]"))pop.close()});
 
 /* ============ ZACHT INFADEN BIJ HET SCROLLEN ============ */
 root.classList.add("js");
@@ -318,7 +389,7 @@ function syncLD(){
   S().closed.filter(c=>c.to>=todayIso()).forEach(c=>sp.push({"@type":"OpeningHoursSpecification",opens:"00:00",closes:"00:00",validFrom:c.from,validThrough:c.to}));
   b.openingHoursSpecification=sp;bz.textContent=JSON.stringify(b);
   if(ev){const url=location.origin+location.pathname;
-   ev.textContent=JSON.stringify({"@context":"https://schema.org","@graph":upcoming().map(e=>{const t=evTimes(e),im=imgOf(e),left=e.cap-taken(e.id);
+   ev.textContent=JSON.stringify({"@context":"https://schema.org","@graph":upcoming(root.dataset.page==="events"?"event":"workshop").map(e=>{const t=evTimes(e),im=imgOf(e),left=e.cap-taken(e.id);
     return {"@type":"Event",name:e.title,description:e.desc,startDate:t[0],endDate:t[1],eventStatus:"https://schema.org/EventScheduled",eventAttendanceMode:"https://schema.org/OfflineEventAttendanceMode",
      location:{"@type":"Place",name:b.name,address:b.address},organizer:{"@type":"Organization",name:b.name,url:b.url},image:im&&!im.startsWith("data:")?[new URL(im,location.href).href]:undefined,
      offers:{"@type":"Offer",url,price:String(e.price),priceCurrency:"EUR",availability:left<=0?"https://schema.org/SoldOut":"https://schema.org/InStock"}}})})}
@@ -326,3 +397,4 @@ function syncLD(){
 }
 function renderAll(){renderHours();renderEvents();refreshBooking();syncLD()}
 renderAll();route();watchReveal();
+if(root.dataset.page==="home"&&!/^#\/?(beheer)/.test(location.hash))setTimeout(showPop,700);
