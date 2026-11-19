@@ -118,9 +118,9 @@ const typeOf=e=>e.type==="event"?"event":"workshop";
 function upcoming(type){const t=todayIso();return DB.events.filter(e=>e.pub&&e.date>=t&&(!type||typeOf(e)===type)).sort((a,b)=>a.date.localeCompare(b.date))}
 function pastEvents(type){const t=todayIso();return DB.events.filter(e=>e.pub&&e.date<t&&typeOf(e)===type).sort((a,b)=>b.date.localeCompare(a.date))}
 const spots=left=>left<=0?"volzet":left===1?"nog 1 plaats":"nog "+left+" plaatsen";
-/* titel, dan de afbeelding, dan datum en uur met de verdere info */
+/* titel, afbeelding, de details van de workshop, dan (met meer witruimte) de datum met daaronder de prijs */
 function evCard(e){const left=e.cap-taken(e.id);
- return `<article class="ev rv"><h2>${esc(e.title)}</h2>${imgOf(e)?`<figure class="pic"><img src="${imgOf(e)}" alt="${esc("Affiche: "+e.title+", "+fmtDate(e.date))}" loading="lazy"></figure>`:""}<div class="evb"><p class="when">${esc(fmtDate(e.date))} · ${esc(e.time)}</p><p>${esc(e.desc)}</p><p class="meta">${eur(e.price)} per persoon · ${spots(left)}</p><button class="btn o" type="button" data-signup="${e.id}">${left<=0?"Wachtlijst":"Inschrijven"}</button></div></article>`}
+ return `<article class="ev rv"><h2>${esc(e.title)}</h2>${imgOf(e)?`<figure class="pic"><img src="${imgOf(e)}" alt="${esc("Affiche: "+e.title+", "+fmtDate(e.date))}" loading="lazy"></figure>`:""}<div class="evb"><p>${esc(e.desc)}</p><p class="when">${esc(fmtDate(e.date))} · ${esc(e.time)}</p><p class="meta">${eur(e.price)} per persoon · ${spots(left)}</p><button class="btn o" type="button" data-signup="${e.id}">${left<=0?"Wachtlijst":"Inschrijven"}</button></div></article>`}
 function pastCard(e){return `<article class="pe rv"><span class="tag">Afgelopen</span>${imgOf(e)?`<figure class="pic"><img src="${imgOf(e)}" alt="${esc(e.title)}" loading="lazy"></figure>`:""}<h3>${esc(e.title)}</h3><p class="when">${esc(fmtDate(e.date))} · ${esc(e.time)}</p><p>${esc(e.desc)}</p></article>`}
 const emptyMsg=what=>`<p class="empty">Nog even aan het fijnmalen. Nieuwe ${what} verschijnen hier en op <a href="https://www.instagram.com/kopvol.koffiebar/" target="_blank" rel="noopener">@kopvol.koffiebar</a>.</p>`;
 function renderEvents(){
