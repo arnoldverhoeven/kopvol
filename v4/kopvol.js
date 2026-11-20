@@ -20,7 +20,7 @@ const SW=(c="")=>`<svg class="sw ${c}" aria-hidden="true"><use href="#sw"/></svg
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("on"),2400)}
 
 /* ============ DATA (demo) ============ */
-const PH={draai:"/v4/img/draai.jpg",latte:"/v4/img/latte.jpg",coupe:"/v4/img/coupe.jpg",iced:"/v4/img/iced.jpg",bekers:"/v4/img/bekers.jpg",popup:"/v4/img/popup.jpg"};
+const PH={draai:"/v4/img/draai.jpg",latte:"/v4/img/latte.jpg",coupe:"/v4/img/coupe.jpg",iced:"/v4/img/iced.jpg",gastchef:"/v4/img/gastchef.jpg",bekers:"/v4/img/bekers.jpg",popup:"/v4/img/popup.jpg"};
 const imgOf=e=>e.img?(PH[e.img]||e.img):"";
 /* standaard de Google-openingsuren; de eigenaars passen ze aan in het beheer */
 const DEFAULT_SETTINGS={hours:{0:[9,16],1:[8,16],2:null,3:[8,16],4:[8,16],5:[8,16],6:[9,16]},closed:[{id:"c1",from:"2026-12-24",to:"2027-01-02",reason:"Kerstvakantie"}],tables:{binnen:4,buiten:4},dur:2,minP:6,maxP:14,reserveOnline:true};
@@ -29,7 +29,7 @@ const SEED_EVENTS=[
  {id:"e1",type:"workshop",img:"draai",title:"Draai je eigen kopje",date:"2026-11-28",time:"10u – 13u",price:65,cap:8,pub:true,desc:"Ilona neemt je mee achter de draaitafel. Je draait twee kopjes, kiest je glazuur en haalt ze drie weken later gebakken op in de bar. Geen ervaring nodig."},
  {id:"e2",type:"workshop",img:"latte",title:"Latte art voor beginners",date:"2026-12-13",time:"16u30 – 18u",price:35,cap:6,pub:true,desc:"Robin leert je melk stomen en een hartje gieten. Veel oefenen, en je drinkt je eigen werk op."},
  {id:"e3",type:"event",img:"coupe",title:"Coupevol: cava na de uren",date:"2026-12-18",time:"18u – 22u",price:25,cap:24,pub:true,desc:"Na vieren ruilen we de koffie voor bubbels. Muziek op de achtergrond en de buurt aan tafel. Je eerste glas zit in je inschrijving."},
- {id:"e4",type:"event",img:"iced",title:"Gastchef aan de bar",date:"2026-12-04",time:"18u30 – 22u",price:55,cap:20,pub:true,desc:"Elke maand nodigt Robin een gastchef uit. Voorbeeldtekst: hier komt wie er kookt en wat er op het menu staat."},
+ {id:"e4",type:"event",img:"gastchef",title:"Gastchef aan de bar",date:"2026-12-04",time:"18u30 – 22u",price:55,cap:20,pub:true,desc:"Elke maand nodigt Robin een gastchef uit. Voorbeeldtekst: hier komt wie er kookt en wat er op het menu staat."},
  {id:"e5",type:"event",img:"bekers",title:"Gastchefavond",date:"2026-10-23",time:"18u30 – 22u",price:55,cap:20,pub:true,desc:"Voorbeeldtekst: voorbije events blijven hier staan, met een korte terugblik."}
 ];
 const SEED_REGS=[
@@ -45,7 +45,7 @@ const SEED_BOOKINGS=[
  {id:"b3",name:"Els Vermeulen",email:"els.v@example.be",phone:"0495 11 22 33",date:nextIso(6),time:"09:30",n:7,area:"binnen",note:"Ontbijt met collega's",status:"bevestigd",at:"2026-11-15T08:03:00"}
 ];
 const DEFAULT_POPUP={on:false,img:"popup",alt:"Kerstvakantie: KOPVOL is gesloten van 24 december tot en met 2 januari en opent opnieuw op zondag 3 januari om 9u.",from:"2026-11-20",to:"2027-01-02"};
-const KEY="kopvol_v9";
+const KEY="kopvol_v10";
 let DB=load();
 function fresh(){return {events:structuredClone(SEED_EVENTS),regs:structuredClone(SEED_REGS),bookings:structuredClone(SEED_BOOKINGS),settings:structuredClone(DEFAULT_SETTINGS),popup:structuredClone(DEFAULT_POPUP)}}
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.events&&d.settings&&d.bookings){if(!d.popup)d.popup=structuredClone(DEFAULT_POPUP);return d}}catch(e){}return fresh()}
